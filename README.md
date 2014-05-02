@@ -1,4 +1,63 @@
 vaxiom-docker
 =============
+# Docker files
+Various docker files for dev/test.
 
-My Docker playground
+## Base Docker files for Debian, Ubuntu and Centos
+Docker files to build minimal SSH enabled Debian, Ubuntu and Centos images.
+
+    $ cd base/centos
+
+    #build image
+    $ build-docker-image centos mytag $HOME/$USER/.ssh/id_rsa.pub
+
+    #launch 5 containers, host volume mapped to /opt/data/centos-N
+    $ launch-docker-containers centos mytag 5
+
+    #stop and remove containers named centos
+    $ stop-docker-containers centos*
+
+## Percona XtraDB Cluster 5.6 Dockerfile
+This docker file creates an image with the most recent Percona XtraDB Cluster 5.6 package installed.
+Each launched image starts a single bootstrapped Galera node. A launched image will check
+if the MySQL server's data dir needs to be initated or can be re-used.
+
+Run the bootstrap-cluster.sh script to bootstrap a cluster.
+The script sets a proper wsrep-cluster-address for all instances named 'galera-N'
+and then performs a rolling node restart of the DB nodes to join the cluster.
+
+### Build a docker image
+The default root user and MySQL server root password is 'root123'.
+Ports exposed: 22 80 443 4444 4567 4568
+
+Before creating the image, tune the my.cnf file to your liking.
+
+#### centos:latest
+
+    $ cd percona-xtradb-5.6/centos
+    $ ./build.sh
+    $ docker images
+
+    alyu/centos         pxc56               01eb2d9512be        4 days ago          1.059 GB
+
+### Start 3 db instances
+
+Launch 3 images named 'galera-1', 'galera-2', and 'galera-3' and map the host's
+/mnt/data/{centos-pxc56|ubuntu-pxc56}/mysql to the instance's /var/lib/mysql direcory.
+
+    $ ./start-servers.sh 3
+
+    $ docker ps
+
+
+### Bootstrap the Galera cluster
+
+Sets a proper wsrep-cluster-address in each node's my.cnf file and performs a rolling restart
+of the nodes so that they join the cluster.
+
+    $ ./bootstrap-cluster.sh
+
+### Login to the first node and check the cluster status
+
+    $ ssh root@172.17.0.2 (pass: root123)
+    $ mysql -uroot -proot123 -e "show status like '%wsrep%'"
