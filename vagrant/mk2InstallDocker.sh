@@ -164,33 +164,30 @@ main() {
 	echo "INFO: Verifying installation steps..."
 
 	runYumUpdate
-
-	if ( isCorrectKernel ) 
+	
+	if ( createMyUserAccount ) 
 	then 
-		if ( ! dockerExists )
-		then
-			if ( installGit )
+		if ( isCorrectKernel ) 
+		then 
+			if ( ! dockerExists )
 			then
-				if ( installVaxiomDocker )
+				if ( installGit )
 				then
-					installDocker
-					DOCKER_VERSION=$(docker --version)
-					if [ -z "$DOCKER_VERSION" ]; then
-						echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
-					else								
-						echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
-						echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
+					if ( installVaxiomDocker )
+					then
+						installDocker
+						DOCKER_VERSION=$(docker --version)
+						if [ -z "$DOCKER_VERSION" ]; then
+							echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
+						else								
+							echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
+							echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
+						fi
 					fi
 				fi
 			fi
-		fi
+		fi	
 	fi
-	
-	#if ( ! does_file_exists "/etc/ssh/docker_host_rsa_key" )
-	#then
-	#	generateSSHKeys
-	#	updateNetworkSettings
-	#fi
 	
 	echo "INFO: Complete!"
 }
