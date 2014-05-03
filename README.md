@@ -3,8 +3,8 @@ vaxiom-docker
 # Docker files
 Various docker files for dev/test.
 
-## Base Docker files for Debian, Ubuntu and Centos
-Docker files to build minimal SSH enabled Debian, Ubuntu and Centos images.
+## Base Docker files for Centos 6.5
+Docker files to build minimal SSH enabled Centos images.
 
     $ cd base/centos
 
