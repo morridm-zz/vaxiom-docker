@@ -140,7 +140,7 @@ main() {
 	if [ -d "$CENTOS_SRC_DIR" ];then
 		cd $CENTOS_SRC_DIR
 		genSSHKeys	
-		if ( dockerBuildBaseImage )
+		if ( buildDockerImages )
 		then
 			echo "SUCCESS:  Job completed without errors."
 		else
