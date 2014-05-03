@@ -13,7 +13,7 @@ ssh_key=id_rsa_pub
 DOCK_USER="vaxiom"
 container=$1
 tag=$2
-action=$3
+action=$4
 
 ###Usage: ./build-docker-image centos latest $HOME/$USER/.ssh/id_rsa.pub
 usage() {
