@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# Install Docker See https://github.com/komljen/docker
-#
 set -e
 HOME_DIR=`pwd`
 
@@ -8,49 +6,6 @@ HOME_DIR=`pwd`
 runYumUpdate() {
 	echo "INFO: Checking current installation: yum -y update..."
 	yum -y update
-	return 0
-}
-
-setupInstallFiles() {
-	local DOCKER_HOME_DIR="/home/vagrant/docker/"
-	if [ ! -d "$DOCKER_HOME_DIR" ];then
-		mkdir -p /home/vagrant/docker
-		if [ ! $? -eq 0 ];then	   
-			echo "ERROR:  cannot create: mkdir -p /home/vagrant/docker"
-			return 1
-		fi
-	fi
-	
-	chmod 700 $DOCKER_HOME_DIR
-	if [ ! $? -eq 0 ];then	   
-		echo "ERROR:  unable to set permissions: chmod 700 $DOCKER_HOME_DIR"
-		return 1
-	fi
-
-	chown -R vagrant:vagrant $DOCKER_HOME_DIR
-	if [ ! $? -eq 0 ];then	   
-		echo "ERROR:  unable to set permissions: chown -R vagrant:vagrant $DOCKER_HOME_DIR"
-		return 1
-	fi	
-	
-	cp -f /vagrant/mk*.sh $DOCKER_HOME_DIR
-	if [ ! $? -eq 0 ];then	   
-		echo "ERROR:  unable to run: cp -f /vagrant/mk*.sh $DOCKER_HOME_DIR"
-		return 1
-	fi		
-	
-	cp -f /vagrant/supervisord.conf $DOCKER_HOME_DIR
-	if [ ! $? -eq 0 ];then	   
-		echo "ERROR:  unable to run: cp -f /vagrant/supervisord.conf $DOCKER_HOME_DIR"
-		return 1
-	fi
-	
-	cp -f /vagrant/Dockfile_*_*.txt $DOCKER_HOME_DIR
-	if [ ! $? -eq 0 ];then	   
-		echo "ERROR:  unable to run: cp -f /vagrant/Dockfile_*_*.txt $DOCKER_HOME_DIR"
-		return 1
-	fi		
-	
 	return 0
 }
 
@@ -90,11 +45,8 @@ installEpel() {
 }
 
 main() {
-	if ( setupInstallFiles ) 
-	then
-		runYumUpdate
-		installEpel	
-	fi
+	runYumUpdate
+	installEpel
 }
 
 
