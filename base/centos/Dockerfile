@@ -37,7 +37,7 @@ ADD id_rsa.pub /home/dmorris/.ssh/authorized_keys
 RUN echo "dmorris        ALL=(ALL)       ALL" >> /etc/sudoers.d/dmorris
 RUN chmod 700 /home/dmorris/.ssh
 RUN chown dmorris:dmorris /home/dmorris/.ssh/authorized_keys
-RUN chmod 600 /home/dmorris/.ssh/authorized
+RUN chmod 600 /home/dmorris/.ssh/authorized_keys
 
 # supervisord for sshd
 RUN yum -y install python-setuptools
