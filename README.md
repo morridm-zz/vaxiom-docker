@@ -9,7 +9,7 @@ Docker files to build minimal SSH enabled Debian, Ubuntu and Centos images.
     $ cd base/centos
 
     #build image
-    $ build-docker-image centos mytag $HOME/$USER/.ssh/id_rsa.pub
+    $ ./build-docker-image centos latest $HOME/$USER/.ssh/id_rsa.pub
 
     #launch 5 containers, host volume mapped to /opt/data/centos-N
     $ launch-docker-containers centos mytag 5
