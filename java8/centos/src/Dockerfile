@@ -1,5 +1,5 @@
-# Usage:   docker build -t "vaxiomGCE/AXIOJAVA8" - < Dockfile_BuildJava8.txt > Dockfile_BuildJava8.log &
-FROM vaxiomGCE/AXIOSSH01:latest
+# Usage:   docker build -t "vaxiom/AXIOJAVA8" - < Dockfile_BuildJava8.txt > Dockfile_BuildJava8.log &
+FROM vaxiom/AXIOSSH01:latest
 MAINTAINER David Morris, david.morris@axpm.com
 
 #VARIABLES
