@@ -3,8 +3,11 @@
 #Setup env variables
 HOME_DIR=`pwd`
 CENTOS_SRC_DIR="centos/"
+
+DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
 DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
-DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/"
+DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
+
 ssh_key=id_rsa_pub
 DOCK_USER="vaxiom"
 container=$1
@@ -58,12 +61,16 @@ dockerBuildBaseImage() {
 	local IMAGE_NAME="$DOCK_USER/$container"
 	
 	echo "INFO: Building docker image $IMAGE_NAME ..."
-	sudo docker build -t $IMAGE_NAME:$tag .
-	if [ $? -eq 0 ];then	   
-		echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:$tag ."
-		RC=0
+	if [ -d "$DOCKER_BASE_IMAGE" ];then
+		sudo docker build -t $IMAGE_NAME:$tag .
+		if [ $? -eq 0 ];then	   
+			echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:$tag ."
+			RC=0
+		else
+			echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:$tag ."			
+		fi
 	else
-		echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:$tag ."			
+		echo "ERROR: Unable to locate directory: $DOCKER_BASE_IMAGE"
 	fi
 	
 	cd $TMP_HOME
