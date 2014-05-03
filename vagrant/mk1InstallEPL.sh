@@ -2,6 +2,7 @@
 set -e
 HOME_DIR=`pwd`
 
+# git clone https://github.com/morridm/vaxiom-docker
 # Verify all rpm packages are current
 runYumUpdate() {
 	echo "INFO: Checking current installation: yum -y update..."
