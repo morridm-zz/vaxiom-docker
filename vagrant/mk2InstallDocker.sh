@@ -2,6 +2,10 @@
 set -e
 HOME_DIR=`pwd`
 VAXIOM_GIT_HOME="/tmp/vaxiom_docker/"
+AUTHORIZED_KEYS="/home/vagrant/.ssh/authorized_keys"
+CREATE_USERNAME="dmorris"
+CREATE_USERNAME_PWD="dmorris123"
+
 # Common function to see if a file exists
 does_file_exists(){
 	local f="$1"
@@ -118,39 +122,39 @@ installVaxiomDocker() {
 createMyUserAccount() {
 	local RC=0
 	
-	if [ ! -f "$HOME/$USER/.ssh/authorized_keys" ];then
-		echo "ERROR:  unable to locate the $HOME/$USER/.ssh/authorized_keys file"
+	if [ ! -f "$AUTHORIZED_KEYS" ];then
+		echo "ERROR:  unable to locate the $AUTHORIZED_KEYS"
 		return 1
 	fi
 	
-	useradd -m dmorris
+	useradd -m $CREATE_USERNAME
 	if [ ! $? -eq 0 ];then	   	   
-		echo "ERROR:  running command:  useradd -m dmorris"
+		echo "ERROR:  running command:  useradd -m $CREATE_USERNAME"
 		return 1
 	fi
 	
-	echo "dmorris:dmorris123" | chpasswd
+	echo "$CREATE_USERNAME:$CREATE_USERNAME_PWD" | chpasswd
 	if [ ! $? -eq 0 ];then	   	   
-		echo "ERROR:  running command:  echo "dmorris:dmorris123" | chpasswd"
+		echo "ERROR:  running command:  echo "$CREATE_USERNAME:$CREATE_USERNAME_PWD" | chpasswd"
 		return 1
 	fi
 	
-	mkdir -p /home/dmorris/.ssh/
+	mkdir -p /home/$CREATE_USERNAME/.ssh/
 	if [ ! $? -eq 0 ];then	   	   
-		echo "ERROR:  running command:  mkdir -p /home/dmorris/.ssh/"
+		echo "ERROR:  running command:  mkdir -p /home/$CREATE_USERNAME/.ssh/"
 		return 1
 	fi
 	
-	chown -R dmorris:dmorris /home/dmorris/.ssh/
+	chown -R $CREATE_USERNAME:$CREATE_USERNAME /home/$CREATE_USERNAME/.ssh/
 	
 	
 	
-	echo "INFO: Running cmd: cat $HOME/$USER/.ssh/authorized_keys >> /home/dmorris/.ssh/authorized_keys"
-	cat home/vagrant/.ssh/authorized_keys >> /home/dmorris/.ssh/authorized_keys
-	echo "dmorris        ALL=(ALL)       ALL" >> /etc/sudoers.d/dmorris
-	chmod 700 /home/dmorris/.ssh
-	chown dmorris:dmorris /home/dmorris/.ssh/authorized_keys
-	chmod 600 /home/dmorris/.ssh/authorized_keys
+	echo "INFO: Running cmd: cat $HOME/$USER/.ssh/authorized_keys >> /home/$CREATE_USERNAME/.ssh/authorized_keys"
+	cat $AUTHORIZED_KEYS >> /home/$CREATE_USERNAME/.ssh/authorized_keys
+	echo "$CREATE_USERNAME        ALL=(ALL)       ALL" >> /etc/sudoers.d/$CREATE_USERNAME
+	chmod 700 /home/$CREATE_USERNAME/.ssh
+	chown $CREATE_USERNAME:$CREATE_USERNAME /home/$CREATE_USERNAME/.ssh/authorized_keys
+	chmod 600 /home/$CREATE_USERNAME/.ssh/authorized_keys
 	
 	return $RC
 }
