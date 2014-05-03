@@ -3,6 +3,8 @@
 #Setup env variables
 HOME_DIR=`pwd`
 CENTOS_SRC_DIR="centos/"
+DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
+DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/"
 ssh_key=id_rsa_pub
 DOCK_USER="vaxiom"
 container=$1
@@ -50,7 +52,7 @@ genSSHKeys() {
 	return $RC
 }
 
-dockerBuild() {
+dockerBuildBaseImage() {
 	local RC=1
 	
 	sudo docker build -t $DOCK_USER/$container:$tag .
@@ -64,11 +66,75 @@ dockerBuild() {
 	return $RC
 }
 
+dockerBuildJavaImage() {
+	local RC=1
+	local TMP_HOME=`pwd`
+	local IMAGE_NAME="vaxiom/AXIOJAVA8"
+	
+	if [ -d "$DOCKER_JAVA_IMAGE" ];then
+		cd $DOCKER_JAVA_IMAGE
+		sudo docker build -t $IMAGE_NAME:latest .
+		if [ $? -eq 0 ];then	   
+			echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:latest ."
+			RC=0
+		else
+			echo "ERROR:  building docker image: sudo docker build -t $IMAGE_NAME:latest ."			
+		fi	
+	else
+		echo "ERROR: Unable to locate directory: $DOCKER_JAVA_IMAGE"
+	fi
+	
+	cd $TMP_HOME
+	return $RC
+}
+
+dockerBuildTomcatImage() {
+	local RC=1
+	local TMP_HOME=`pwd`
+	local IMAGE_NAME="vaxiom/AXIOVM01TOMCAT7"
+	
+	if [ -d "$DOCKER_TOMCAT_IMAGE" ];then
+		cd $DOCKER_TOMCAT_IMAGE
+		sudo docker build -t $IMAGE_NAME:latest .
+		if [ $? -eq 0 ];then	   
+			echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:latest ."
+			RC=0
+		else
+			echo "ERROR:  building docker image: sudo docker build -t $IMAGE_NAME:latest ."			
+		fi	
+	else
+		echo "ERROR: Unable to locate directory: $DOCKER_TOMCAT_IMAGE"
+	fi
+	
+	cd $TMP_HOME
+	return $RC
+}
+
+buildDockerImages() {
+	if ( ! dockerBuildBaseImage )
+	then
+		return 1
+	fi
+	
+	if ( ! dockerBuildJavaImage )
+	then
+		return 1
+	fi
+	
+	if ( ! dockerBuildTomcatImage )
+	then
+		return 1
+	fi
+	
+	return 0
+}
+
+
 main() {
 	if [ -d "$CENTOS_SRC_DIR" ];then
 		cd $CENTOS_SRC_DIR
 		genSSHKeys	
-		if ( dockerBuild )
+		if ( dockerBuildBaseImage )
 		then
 			echo "SUCCESS:  Job completed without errors."
 		else
