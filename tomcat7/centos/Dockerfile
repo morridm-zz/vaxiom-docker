@@ -1,9 +1,3 @@
-# VAxiom Web Server Image
-#
-# VERSION       0.0.1
-#
-# USAGE(s) (note as root):
-#       1.  docker build -t "vaxiom/AXIOVM01TOMCAT7" - < Dockfile_BuildTomcat7.txt > Dockfile_BuildTomcat7.log &
 FROM vaxiom/AXIOJAVA8:latest
 MAINTAINER David Morris, david.morris@axpm.com
 

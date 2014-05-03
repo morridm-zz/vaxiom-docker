@@ -1,4 +1,3 @@
-# Usage:   docker build -t "vaxiom/AXIOJAVA8" - < Dockfile_BuildJava8.txt > Dockfile_BuildJava8.log &
 FROM vaxiom/centos:latest
 MAINTAINER David Morris, david.morris@axpm.com
 
