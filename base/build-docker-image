@@ -54,15 +54,19 @@ genSSHKeys() {
 
 dockerBuildBaseImage() {
 	local RC=1
+	local TMP_HOME=`pwd`
+	local IMAGE_NAME="$DOCK_USER/$container"
 	
-	sudo docker build -t $DOCK_USER/$container:$tag .
+	echo "INFO: Building docker image $IMAGE_NAME ..."
+	sudo docker build -t $IMAGE_NAME:$tag .
 	if [ $? -eq 0 ];then	   
-		echo "INFO:  Docker image built using: sudo docker build -t $DOCK_USER/$container:$tag ."
+		echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:$tag ."
 		RC=0
 	else
-		echo "ERROR:  building docker image: docker build -t $DOCK_USER/$container:$tag ."			
+		echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:$tag ."			
 	fi
 	
+	cd $TMP_HOME
 	return $RC
 }
 
@@ -71,6 +75,7 @@ dockerBuildJavaImage() {
 	local TMP_HOME=`pwd`
 	local IMAGE_NAME="vaxiom/AXIOJAVA8"
 	
+	echo "INFO: Building docker image $IMAGE_NAME ..."
 	if [ -d "$DOCKER_JAVA_IMAGE" ];then
 		cd $DOCKER_JAVA_IMAGE
 		sudo docker build -t $IMAGE_NAME:latest .
@@ -93,6 +98,7 @@ dockerBuildTomcatImage() {
 	local TMP_HOME=`pwd`
 	local IMAGE_NAME="vaxiom/AXIOVM01TOMCAT7"
 	
+	echo "INFO: Building docker image $IMAGE_NAME ..."
 	if [ -d "$DOCKER_TOMCAT_IMAGE" ];then
 		cd $DOCKER_TOMCAT_IMAGE
 		sudo docker build -t $IMAGE_NAME:latest .
