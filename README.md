@@ -29,35 +29,3 @@ and then performs a rolling node restart of the DB nodes to join the cluster.
 ### Build a docker image
 The default root user and MySQL server root password is 'root123'.
 Ports exposed: 22 80 443 4444 4567 4568
-
-Before creating the image, tune the my.cnf file to your liking.
-
-#### centos:latest
-
-    $ cd percona-xtradb-5.6/centos
-    $ ./build.sh
-    $ docker images
-
-    alyu/centos         pxc56               01eb2d9512be        4 days ago          1.059 GB
-
-### Start 3 db instances
-
-Launch 3 images named 'galera-1', 'galera-2', and 'galera-3' and map the host's
-/mnt/data/{centos-pxc56|ubuntu-pxc56}/mysql to the instance's /var/lib/mysql direcory.
-
-    $ ./start-servers.sh 3
-
-    $ docker ps
-
-
-### Bootstrap the Galera cluster
-
-Sets a proper wsrep-cluster-address in each node's my.cnf file and performs a rolling restart
-of the nodes so that they join the cluster.
-
-    $ ./bootstrap-cluster.sh
-
-### Login to the first node and check the cluster status
-
-    $ ssh root@172.17.0.2 (pass: root123)
-    $ mysql -uroot -proot123 -e "show status like '%wsrep%'"
