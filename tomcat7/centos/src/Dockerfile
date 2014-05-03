@@ -74,7 +74,7 @@ RUN chmod 755 /etc/init.d/tomcat7
 RUN chkconfig --add tomcat7
 RUN chkconfig --level 234 tomcat7 on
 RUN chkconfig --list tomcat7
-RUN keytool -genkey -keyalg RSA -alias tomcat7 -keypass ChAngeThis1 -storepass Vi6Eig4d -dname "CN=dmo, OU=IT, O=Little Rock, L=Arkansas, ST=AR, C=USA" -keystore /usr/share/tomcat7/.keystore
+RUN keytool -genkey -keyalg RSA -alias tomcat7 -keypass ChAngeThis1 -storepass ChAngeThis1 -dname "CN=dmo, OU=IT, O=Little Rock, L=Arkansas, ST=AR, C=USA" -keystore /usr/share/tomcat7/.keystore
 RUN touch /etc/sysconfig/network
 
 EXPOSE 80 8080 8443 443
