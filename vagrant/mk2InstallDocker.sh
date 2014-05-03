@@ -115,6 +115,46 @@ installVaxiomDocker() {
 	return $RC
 }
 
+createMyUserAccount() {
+	local RC=0
+	
+	if [ ! -f "$HOME/$USER/.ssh/authorized_keys" ];then
+		echo "ERROR:  unable to locate the $HOME/$USER/.ssh/authorized_keys file"
+		return 1
+	fi
+	
+	useradd -m dmorris
+	if [ ! $? -eq 0 ];then	   	   
+		echo "ERROR:  running command:  useradd -m dmorris"
+		return 1
+	fi
+	
+	echo "dmorris:dmorris123" | chpasswd
+	if [ ! $? -eq 0 ];then	   	   
+		echo "ERROR:  running command:  echo "dmorris:dmorris123" | chpasswd"
+		return 1
+	fi
+	
+	mkdir -p /home/dmorris/.ssh/
+	if [ ! $? -eq 0 ];then	   	   
+		echo "ERROR:  running command:  mkdir -p /home/dmorris/.ssh/"
+		return 1
+	fi
+	
+	chown -R dmorris:dmorris /home/dmorris/.ssh/
+	
+	
+	
+	echo "INFO: Running cmd: cat $HOME/$USER/.ssh/authorized_keys >> /home/dmorris/.ssh/authorized_keys"
+	cat home/vagrant/.ssh/authorized_keys >> /home/dmorris/.ssh/authorized_keys
+	echo "dmorris        ALL=(ALL)       ALL" >> /etc/sudoers.d/dmorris
+	chmod 700 /home/dmorris/.ssh
+	chown dmorris:dmorris /home/dmorris/.ssh/authorized_keys
+	chmod 600 /home/dmorris/.ssh/authorized_keys
+	
+	return $RC
+}
+
 # This is the main function 
 main() {
 	echo "INFO: Verifying installation steps..."
