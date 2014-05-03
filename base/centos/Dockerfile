@@ -45,7 +45,9 @@ RUN easy_install supervisor
 ADD src/supervisord.conf /etc/
 RUN chown root.root /etc/supervisord.conf
 
-EXPOSE 22 80 443 3306 4444 4567 4568 27017 27018 27019 28017
+##EXPOSE 22 80 443 3306 4444 4567 4568 27017 27018 27019 28017
+
+EXPOSE 22
 
 ADD src/init.sh /opt/init.sh
 RUN chown root.root /opt/init.sh

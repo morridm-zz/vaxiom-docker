@@ -71,7 +71,8 @@ RUN chkconfig --list tomcat7
 RUN keytool -genkey -keyalg RSA -alias tomcat7 -keypass ChAngeThis1 -storepass ChAngeThis1 -dname "CN=dmo, OU=IT, O=Little Rock, L=Arkansas, ST=AR, C=USA" -keystore /usr/share/tomcat7/.keystore
 RUN touch /etc/sysconfig/network
 
-EXPOSE 80 8080 8443 443
+##EXPOSE 80 8080 8443 443
+EXPOSE 80 443 3306 4444 4567 4568 27017 27018 27019 28017
 
 CMD service tomcat7 start && tail -F /opt/tomcat7/logs/*
 
