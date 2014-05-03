@@ -224,6 +224,7 @@ main() {
         local RC=1
 
         if [ -d "$BASE_DIR" ];then
+        	cd $BASE_DIR
                 if [ -d "$CENTOS_SRC_DIR" ];then
                         cd $CENTOS_SRC_DIR
                         genSSHKeys
