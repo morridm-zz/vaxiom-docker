@@ -227,7 +227,7 @@ main() {
                 if [ -d "$CENTOS_SRC_DIR" ];then
                         cd $CENTOS_SRC_DIR
                         genSSHKeys
-                        if ( checkAction )
+                        if ( checkAction "$action" )
                         then
                                 echo "SUCCESS:  Job completed without errors."
                                 RC=0
