@@ -41,7 +41,7 @@ installEpel() {
 		echo "WARNING:  After reboot run:"
 		echo "			1. vi /etc/sysconfig/selinux"
 		echo "			2. Change 'SELINUX=enforcing' to 'SELINUX=disabled' "
-		echo "          3. reboot"
+		echo "          	3. reboot"
 	fi
 }
 
