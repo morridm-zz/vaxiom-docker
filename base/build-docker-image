@@ -2,6 +2,7 @@
 
 #Setup env variables
 HOME_DIR=`pwd`
+BASE_DIR="/opt/vaxiom-docker/base/"
 CENTOS_SRC_DIR="centos/"
 
 DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
@@ -12,11 +13,12 @@ ssh_key=id_rsa_pub
 DOCK_USER="vaxiom"
 container=$1
 tag=$2
+action=$3
 
 ###Usage: ./build-docker-image centos latest $HOME/$USER/.ssh/id_rsa.pub
 usage() {
 	local RC=0
-	[[ $# -lt 2 ]] && echo "$(basename $0) <container name> <tag> [ssh pub key]" && RC=1
+	[[ $# -lt 2 ]] && echo "$(basename $0) <container name> <tag> [ssh pub key] <optional: BASE | JAVA | TOMCAT>" && RC=1
 	return $RC
 }
 
@@ -55,10 +57,53 @@ genSSHKeys() {
 	return $RC
 }
 
+deleteDockerImage() {
+	local RC=0
+	local IMAGE_NAME="$1"
+	local DOCKER_DATE=$(date +%d%m%Y%I%M%S)
+	
+	if [ -z "$IMAGE_NAME" ];then
+		echo "ERROR: missing docker image name..."
+		return 1
+	fi
+	
+	echo "INFO: Searching for $IMAGE_NAME image(s)..."
+	echo "INFO: DELETING EXISTING DOCKER CONTAINERS FOR $IMAGE_NAME..."
+	for container in `docker ps -a | grep '$IMAGE_NAME`; do
+		local DOCKER_IMAGES_STR=$(echo "$container" | sed 's/  */\ /g')
+		declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
+		local DOCKER_CONTAINER_ID${DOCKER_IMAGE_ARRAY[0]}
+		echo "INFO: Deleting container: $DOCKER_CONTAINER_ID ..."
+		docker rm -f $DOCKER_CONTAINER_ID
+		if [ ! $? -eq 0 ];then
+			echo "WARNING: Error deleting container $container"
+		fi
+	done
+
+	echo "INFO: DELETING EXISTING DOCKER IMAGES..."
+	for image in `docker images -a | grep '$IMAGE_NAME`; do
+		local DOCKER_IMAGES_STR=$(echo $image | sed 's/  */\ /g')
+		declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
+		local DOCKER_IMAGE_REPO=${DOCKER_IMAGE_ARRAY[0]}
+		local DOCKER_IMAGE_TAG=${DOCKER_IMAGE_ARRAY[1]}
+		local DOCKER_IMAGE_ID=${DOCKER_IMAGE_ARRAY[2]}
+		local DOCKER_IMAGE_NAME=$(echo $DOCKER_IMAGE_REPO | sed 's/\//\_/g')
+		local DOCKER_IMAGE_FILENAME="${DOCKER_IMAGE_NAME}_${DOCKER_DATE}.tar"
+		echo "INFO: Deleting container: $image ..."
+		docker rmi -f $DOCKER_IMAGE_ID
+		if [ $? -eq 0 ];then
+			echo "WARNING: Error deleting image $image"
+		fi
+	done
+	
+	return $RC
+}
+
 dockerBuildBaseImage() {
 	local RC=1
 	local TMP_HOME=`pwd`
 	local IMAGE_NAME="$DOCK_USER/$container"
+	deleteDockerImage "$IMAGE_NAME"
 	
 	echo "INFO: Building docker image $IMAGE_NAME ..."
 	if [ -d "$DOCKER_BASE_IMAGE" ];then
@@ -81,6 +126,7 @@ dockerBuildJavaImage() {
 	local RC=1
 	local TMP_HOME=`pwd`
 	local IMAGE_NAME="vaxiom/AXIOJAVA8"
+	deleteDockerImage "$IMAGE_NAME"
 	
 	echo "INFO: Building docker image $IMAGE_NAME ..."
 	if [ -d "$DOCKER_JAVA_IMAGE" ];then
@@ -106,6 +152,8 @@ dockerBuildTomcatImage() {
 	local IMAGE_NAME="vaxiom/AXIOVM01TOMCAT7"
 	
 	echo "INFO: Building docker image $IMAGE_NAME ..."
+	deleteDockerImage "$IMAGE_NAME"
+	
 	if [ -d "$DOCKER_TOMCAT_IMAGE" ];then
 		cd $DOCKER_TOMCAT_IMAGE
 		sudo docker build -t $IMAGE_NAME:latest .
@@ -143,19 +191,52 @@ buildDockerImages() {
 	return 0
 }
 
+checkAction() {
+	local f="$1"
+	local RC=1
+	
+	if [ "$f" = "JAVA" ];then
+		dockerBuildJavaImage
+		RC=0
+	fi
+	
+	if [ "$f" = "TOMCAT" ];then
+		dockerBuildTomcatImage
+		RC=0
+	fi
+	
+	if [ "$f" = "BASE" ];then
+		dockerBuildBaseImage
+		RC=0
+	fi
+	
+	if [ -z "$f" ];then
+		buildDockerImages
+		RC=0
+	fi
+	
+	return $RC
+}
 
 main() {
-	if [ -d "$CENTOS_SRC_DIR" ];then
-		cd $CENTOS_SRC_DIR
-		genSSHKeys	
-		if ( buildDockerImages )
-		then
-			echo "SUCCESS:  Job completed without errors."
+	local RC=1
+	
+	if [ -d "$BASE_DIR" ];then
+		if [ -d "$CENTOS_SRC_DIR" ];then
+			cd $CENTOS_SRC_DIR
+			genSSHKeys	
+			if ( checkAction )
+			then
+				echo "SUCCESS:  Job completed without errors."
+				RC=0
+			else
+				echo "ERROR: An error occurred... oops"
+			fi
 		else
-			echo "ERROR: An error occurred... oops"
+			echo "ERROR: Unable to locate directory: $CENTOS_SRC_DIR"
 		fi
 	else
-		echo "ERROR: Unable to locate directory: $CENTOS_SRC_DIR"
+		echo "ERROR: Unable to locate directory: $BASE_DIR"
 	fi
 }
 
