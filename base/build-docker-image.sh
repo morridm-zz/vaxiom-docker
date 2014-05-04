@@ -58,45 +58,49 @@ genSSHKeys() {
 }
 
 deleteDockerImage() {
-        local RC=0
-        local IMAGE_NAME="$1"
-        local DOCKER_DATE=$(date +%d%m%Y%I%M%S)
-        local DOCKER_IMAGES_STR=""
-        local DOCKER_CONTAINER_ID=""
-        local DOCKER_IMAGE_ID=""
+	local RC=0
+    local IMAGE_NAME="$1"
+    local DOCKER_DATE=$(date +%d%m%Y%I%M%S)
+    local DOCKER_IMAGES_STR=""
+	local DOCKER_CONTAINER_ID=""
+    local DOCKER_IMAGE_ID=""
+	
+	
+    if [ -z "$IMAGE_NAME" ];then
+        echo "ERROR: missing docker image name..."
+        RC=1
+    fi
 
-        if [ -z "$IMAGE_NAME" ];then
-                echo "ERROR: missing docker image name..."
-                return 1
-        fi
+sudo su <<HERE
+if ( $RC -eq 0 ];then
+	echo "INFO: Searching for $IMAGE_NAME image(s)..."
+	echo "INFO: DELETING EXISTING DOCKER CONTAINERS FOR $IMAGE_NAME..."
+	for container in `docker ps -a | grep $IMAGE_NAME`; do
+		DOCKER_IMAGES_STR=$(echo '$container' | sed 's/  */\ /g')
+		declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
+		DOCKER_CONTAINER_ID${DOCKER_IMAGE_ARRAY[0]}
+		echo "INFO: Deleting container: $DOCKER_CONTAINER_ID ..."
+		docker rm -f $DOCKER_CONTAINER_ID
+		if [ ! $? -eq 0 ];then
+			echo "WARNING: Error deleting container $container"
+		fi
+	done
 
-        echo "INFO: Searching for $IMAGE_NAME image(s)..."
-        echo "INFO: DELETING EXISTING DOCKER CONTAINERS FOR $IMAGE_NAME..."
-        for container in `sudo docker ps -a | grep $IMAGE_NAME`; do
-                DOCKER_IMAGES_STR=$(echo '$container' | sed 's/  */\ /g')
-                declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
-                DOCKER_CONTAINER_ID${DOCKER_IMAGE_ARRAY[0]}
-                echo "INFO: Deleting container: $DOCKER_CONTAINER_ID ..."
-                sudo docker rm -f $DOCKER_CONTAINER_ID
-                if [ ! $? -eq 0 ];then
-                        echo "WARNING: Error deleting container $container"
-                fi
-        done
+	echo "INFO: DELETING EXISTING DOCKER IMAGES..."
+	for image in `docker images -a | grep $IMAGE_NAME`; do
+		local DOCKER_IMAGES_STR=$(echo '$image' | sed 's/  */\ /g')
+		declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
+		DOCKER_IMAGE_ID=${DOCKER_IMAGE_ARRAY[2]}
 
-        echo "INFO: DELETING EXISTING DOCKER IMAGES..."
-        for image in `sudo docker images -a | grep $IMAGE_NAME`; do
-                local DOCKER_IMAGES_STR=$(echo '$image' | sed 's/  */\ /g')
-                declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
-                DOCKER_IMAGE_ID=${DOCKER_IMAGE_ARRAY[2]}
-
-                echo "INFO: Deleting container: $image ..."
-                sudo docker rmi -f $DOCKER_IMAGE_ID
-                if [ $? -eq 0 ];then
-                        echo "WARNING: Error deleting image $image"
-                fi
-        done
-
-        return $RC
+		echo "INFO: Deleting container: $image ..."
+		docker rmi -f $DOCKER_IMAGE_ID
+		if [ $? -eq 0 ];then
+			echo "WARNING: Error deleting image $image"
+		fi
+	done
+fi
+HERE
+    return $RC
 }
 
 dockerBuildBaseImage() {
@@ -107,9 +111,9 @@ dockerBuildBaseImage() {
 
         echo "INFO: Building docker image $IMAGE_NAME ..."
         if [ -d "$DOCKER_BASE_IMAGE" ];then
-                sudo docker build -t $IMAGE_NAME:$tag .
+                docker build -t $IMAGE_NAME:$tag .
                 if [ $? -eq 0 ];then
-                        echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:$tag ."
+                        echo "INFO:  Docker image built using: docker build -t $IMAGE_NAME:$tag ."
                         RC=0
                 else
                         echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:$tag ."
@@ -132,12 +136,12 @@ dockerBuildJavaImage() {
         echo "INFO: Building docker image $IMAGE_NAME ..."
         if [ -d "$DOCKER_JAVA_IMAGE" ];then
                 cd $DOCKER_JAVA_IMAGE
-                sudo docker build -t $IMAGE_NAME:latest .
+                docker build -t $IMAGE_NAME:latest .
                 if [ $? -eq 0 ];then
-                        echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:latest ."
+                        echo "INFO:  Docker image built using: docker build -t $IMAGE_NAME:latest ."
                         RC=0
                 else
-                        echo "ERROR:  building docker image: sudo docker build -t $IMAGE_NAME:latest ."
+                        echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:latest ."
                 fi
         else
                 echo "ERROR: Unable to locate directory: $DOCKER_JAVA_IMAGE"
@@ -157,13 +161,13 @@ dockerBuildTomcatImage() {
 
         if [ -d "$DOCKER_TOMCAT_IMAGE" ];then
                 cd $DOCKER_TOMCAT_IMAGE
-                sudo docker build -t $IMAGE_NAME:latest .
+                docker build -t $IMAGE_NAME:latest .
                 if [ $? -eq 0 ];then
-                        echo "INFO:  Docker image built using: sudo docker build -t $IMAGE_NAME:latest ."
+                        echo "INFO:  Docker image built using: docker build -t $IMAGE_NAME:latest ."
                         echo "INFO: Run cmd=> docker run -d -p 0.0.0.0:49153:22 -p 0.0.0.0:49154:27018 -p 0.0.0.0:49155:28017 -p 0.0.0.0:49156:3306 -p 0.0.0.0:49157:4444 -p 0.0.0.0:49158:4567 -p 0.0.0.0:49159:80 -p 0.0.0.0:49160:27017 -p 0.0.0.0:49161:27019 -p 0.0.0.0:49162:443 -p 0.0.0.0:49163:4568 vaxiom/AXIOVM01TOMCAT7:latest"
                         RC=0
                 else
-                        echo "ERROR:  building docker image: sudo docker build -t $IMAGE_NAME:latest ."
+                        echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:latest ."
                 fi
         else
                 echo "ERROR: Unable to locate directory: $DOCKER_TOMCAT_IMAGE"
