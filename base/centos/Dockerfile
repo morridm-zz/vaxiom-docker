@@ -25,7 +25,7 @@ RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
 RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
 
 RUN mkdir -p /root/.ssh; chmod 700 /root/.ssh
-ADD id_rsa.pub /root/.ssh/authorized_keys
+ADD src/id_rsa.pub /root/.ssh/authorized_keys
 RUN chown root.root /root/.ssh/*; chmod 600 /root/.ssh/*
 ADD src/nopasswd /etc/sudoers.d/nopasswd
 RUN chown root.root /etc/sudoers.d/*

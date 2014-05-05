@@ -4,9 +4,15 @@ HOME_DIR=`pwd`
 BASE_DIR="/opt/vaxiom-docker/base/"
 CENTOS_SRC_DIR="centos/"
 DOCK_USER="vaxiom"
+
 DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
+DOCKER_BASE_IMAGE_SRC="/opt/vaxiom-docker/base/centos/src/"
+
 DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
+DOCKER_JAVA_IMAGE_SRC="/opt/vaxiom-docker/java8/centos/src/"
+
 DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
+DOCKER_TOMCAT_IMAGE_SRC="/opt/vaxiom-docker/tomcat7/centos/src/"
 
 DEFAULT_CONTAINER="centos"
 DEFAULT_TAG="latest"
@@ -57,36 +63,38 @@ usage() {
 }
 
 does_file_exists(){
-        local f="$1"
-        [[ -f "$f" ]] && return 0 || return 1
+	local f="$1"
+	[[ -f "$f" ]] && return 0 || return 1
 }
 
 wrapUp() {
-        cd $HOME_DIR
+    cd $HOME_DIR
 }
 
 genSSHKeys() {
-        local RC=1
-        
-        if [[ ! -f $ssh_key ]]; then
-            echo "No public ssh key found. Generating a new ssh key"
-            echo ""
+	local RC=1
 
-            ssh-keygen -q -t rsa -N "" -f id_rsa
-            if [ $? -eq 0 ];then
-                if [ -f "id_rsa" ];then
-                        if [ -f "id_rsa.pub" ];then
-                            RC=0
-                        fi
-                fi
-            else
-                echo "ERROR:  Unable to generate rsa keys:  ssh-keygen -q -t rsa -N "" -f id_rsa"
-            fi
-        else
-                RC=0
-        fi
+	if [[ ! -f $ssh_key ]]; then
+		echo "No public ssh key found. Generating a new ssh key"
+		echo ""
 
-        return $RC
+		ssh-keygen -q -t rsa -N "" -f "$ssh_key"
+		if [ $? -eq 0 ];then
+			if [ -f "$ssh_key" ];then
+				mv -f "$ssh_key" "$DOCKER_BASE_IMAGE_SRC"
+					if [ -f "id_rsa.pub" ];then							
+						mv -f "$ssh_key.pub" "$DOCKER_BASE_IMAGE_SRC"
+						RC=0
+					fi
+			fi
+		else
+			echo "ERROR:  Unable to generate rsa keys:  ssh-keygen -q -t rsa -N "" -f id_rsa"
+		fi
+	else
+			RC=0
+	fi
+
+	return $RC
 }
 
 deleteDockerImage() {
