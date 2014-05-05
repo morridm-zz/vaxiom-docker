@@ -75,7 +75,7 @@ wrapUp() {
 genSSHKeys() {
 	local RC=1
 	local key="$1"	
-	local pubExt=".pub"
+	local pubExt="pub"
 	local pub=${key}.${pubExt}
 
 	if [[ ! -f $key ]]; then
