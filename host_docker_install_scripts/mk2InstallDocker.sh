@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 HOME_DIR=`pwd`
-DEFAULT_VAXIOM_GIT_HOME="/tmp/vaxiom_docker/"
+DEFAULT_VAXIOM_GIT_HOME="/opt/vaxiom-docker/"
 DEFAULT_AUTHORIZED_KEYS="/home/vagrant/.ssh/authorized_keys"
 
 CREATE_USERNAME="$1"
@@ -136,17 +136,23 @@ installVaxiomDocker() {
 	local RC=1
 	local TMP_HOME_DIR=`pwd`
 	
-	if [ ! -d "$VAXIOM_GIT_HOME" ];then
+	if [ ! -d "$VAXIOM_GIT_HOME" ];then		
 		sudo mkdir -p $VAXIOM_GIT_HOME
-		chmod 777 $VAXIOM_GIT_HOME
-	fi
-	
-	cd $VAXIOM_GIT_HOME
-	git clone https://github.com/morridm/vaxiom-docker.git
-	if [ $? -eq 0 ];then	   	   
-		RC=0
+		if [ $? -eq 0 ];then
+			chmod 777 $VAXIOM_GIT_HOME
+			if [ $? -eq 0 ];then
+				cd $VAXIOM_GIT_HOME
+				cd ..
+				git clone https://github.com/morridm/vaxiom-docker.git
+				if [ $? -eq 0 ];then	   	   
+					RC=0
+				else
+					echo "ERROR:  Unable to run cmd: git clone https://github.com/morridm/vaxiom-docker.git"
+				fi
+			fi
+		fi
 	else
-		echo "ERROR:  Unable to install docker using:  yum -y install docker-io"
+		RC=0
 	fi
 	
 	cd $TMP_HOME_DIR
@@ -223,6 +229,7 @@ main() {
 								else							
 									echo "INFO: Adding $CREATE_USERNAME to docker group."
 									usermod -a -G docker $USER
+									chown -R $USER:$USER $VAXIOM_GIT_HOME
 									echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
 									echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
 									RC=0
