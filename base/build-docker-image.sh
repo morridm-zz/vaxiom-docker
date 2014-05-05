@@ -14,13 +14,16 @@ action=$4
 
 usage() {
         local RC=0
-        [[ $# -lt 2 ]] && echo "$(basename $0) <container name> <tag> [ssh pub key] <optional image action>" && RC=1
+		if [ $# -lt 2 ];then			
+			RC=1
+		fi
 		
 		if [ ! $RC -eq 0 ];then
-			echo "Usage example 1:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub"
-			echo "Usage example 2:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub BASE"
-			echo "Usage example 3:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub JAVA"
-			echo "Usage example 4:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub TOMCAT"
+			echo "INFO:  Usage:$(basename $0) <container name> <tag> [ssh pub key] <optional image action>"
+			echo "INFO:  Usage example 1:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub"
+			echo "INFO:  Usage example 2:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub BASE"
+			echo "INFO:  Usage example 3:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub JAVA"
+			echo "INFO:  Usage example 4:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub TOMCAT"
 		fi
 		
         return $RC
