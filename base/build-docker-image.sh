@@ -4,16 +4,6 @@ HOME_DIR=`pwd`
 BASE_DIR="/opt/vaxiom-docker/base/"
 CENTOS_SRC_DIR="centos/"
 DOCK_USER="vaxiom"
-
-DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
-DOCKER_BASE_IMAGE_SRC="/opt/vaxiom-docker/base/centos/src/"
-
-DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
-DOCKER_JAVA_IMAGE_SRC="/opt/vaxiom-docker/java8/centos/src/"
-
-DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
-DOCKER_TOMCAT_IMAGE_SRC="/opt/vaxiom-docker/tomcat7/centos/src/"
-
 DEFAULT_CONTAINER="centos"
 DEFAULT_TAG="latest"
 DEFAULT_SSH_KEY="id_rsa_pub"
@@ -39,6 +29,18 @@ fi
 if [ -z "$action" ];then
 	action="$DEFAULT_ACTION"
 fi
+
+DOCKER_BASE_IMAGE_NAME="$DOCK_USER/$container"
+DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
+DOCKER_BASE_IMAGE_SRC="/opt/vaxiom-docker/base/centos/src/"
+
+DOCKER_JAVA_IMAGE_NAME="vaxiom/AXIOJAVA8"
+DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
+DOCKER_JAVA_IMAGE_SRC="/opt/vaxiom-docker/java8/centos/src/"
+
+DOCKER_TOMCAT_IMAGE_NAME="vaxiom/AXIOVM01TOMCAT7"
+DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
+DOCKER_TOMCAT_IMAGE_SRC="/opt/vaxiom-docker/tomcat7/centos/src/"
 
 usage() {
 #./build-docker-image.sh centos latest id_rsa_pub BASE
@@ -150,78 +152,61 @@ deleteDockerImage() {
     return $RC
 }
 
+dockerBuildImage() {
+	local RC=0
+	local TMP_HOME=`pwd`
+	
+	local IMAGE_NAME="$1"
+	local IMAGE_DIR_BASE="$2"
+	local IMAGE_TAG_NAME="$3"
+	
+	if [ -z "$IMAGE_NAME" ];then
+		echo "ERROR:  Invalid image name!"
+		RC=1
+	fi
+	
+	if [ -z "$IMAGE_TAG_NAME" ];then
+		IMAGE_TAG_NAME="latest"
+	fi
+	
+	echo "INFO: Building docker image $IMAGE_NAME ..."		
+	if [ -d "$IMAGE_DIR_BASE" ];then
+		cd "$IMAGE_DIR_BASE"
+		if [ $? -eq 0 ];then
+			if [ $RC -eq 0 ];then	
+				deleteDockerImage "$IMAGE_NAME"
+				docker build -t $IMAGE_NAME:$IMAGE_TAG_NAME .
+				if [ $? -eq 0 ];then
+					echo "INFO:  Docker image built using: docker build -t $IMAGE_NAME:$IMAGE_TAG_NAME ."
+					RC=0
+				else
+					RC=1
+					echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:$IMAGE_TAG_NAME ."
+				fi
+			fi
+		fi
+	else
+		echo "ERROR:  Unable to locate directory:  $IMAGE_DIR_BASE"
+		RC=1
+	fi
+
+	cd $TMP_HOME
+	return $RC
+}
+
 dockerBuildBaseImage() {
-        local RC=1
-        local TMP_HOME=`pwd`
-        local IMAGE_NAME="$DOCK_USER/$container"
-        deleteDockerImage "$IMAGE_NAME"
-
-        echo "INFO: Building docker image $IMAGE_NAME ..."
-        if [ -d "$DOCKER_BASE_IMAGE" ];then
-                docker build -t $IMAGE_NAME:$tag .
-                if [ $? -eq 0 ];then
-                        echo "INFO:  Docker image built using: docker build -t $IMAGE_NAME:$tag ."
-                        RC=0
-                else
-                        echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:$tag ."
-                fi
-        else
-                echo "ERROR: Unable to locate directory: $DOCKER_BASE_IMAGE"
-        fi
-
-        cd $TMP_HOME
-        return $RC
+	dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"		
+    return $?
 }
 
 dockerBuildJavaImage() {
-        local RC=1
-
-        local TMP_HOME=`pwd`
-        local IMAGE_NAME="vaxiom/AXIOJAVA8"
-        deleteDockerImage "$IMAGE_NAME"
-
-        echo "INFO: Building docker image $IMAGE_NAME ..."
-        if [ -d "$DOCKER_JAVA_IMAGE" ];then
-                cd $DOCKER_JAVA_IMAGE
-                docker build -t $IMAGE_NAME:latest .
-                if [ $? -eq 0 ];then
-                        echo "INFO:  Docker image built using: docker build -t $IMAGE_NAME:latest ."
-                        RC=0
-                else
-                        echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:latest ."
-                fi
-        else
-                echo "ERROR: Unable to locate directory: $DOCKER_JAVA_IMAGE"
-        fi
-
-        cd $TMP_HOME
-        return $RC
+	dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag"		
+    return $?        
 }
 
 dockerBuildTomcatImage() {
-        local RC=1
-        local TMP_HOME=`pwd`
-        local IMAGE_NAME="vaxiom/AXIOVM01TOMCAT7"
-
-        echo "INFO: Building docker image $IMAGE_NAME ..."
-        deleteDockerImage "$IMAGE_NAME"
-
-        if [ -d "$DOCKER_TOMCAT_IMAGE" ];then
-                cd $DOCKER_TOMCAT_IMAGE
-                docker build -t $IMAGE_NAME:latest .
-                if [ $? -eq 0 ];then
-                        echo "INFO:  Docker image built using: docker build -t $IMAGE_NAME:latest ."
-                        echo "INFO: Run cmd=> docker run -d -p 0.0.0.0:49153:22 -p 0.0.0.0:49154:27018 -p 0.0.0.0:49155:28017 -p 0.0.0.0:49156:3306 -p 0.0.0.0:49157:4444 -p 0.0.0.0:49158:4567 -p 0.0.0.0:49159:80 -p 0.0.0.0:49160:27017 -p 0.0.0.0:49161:27019 -p 0.0.0.0:49162:443 -p 0.0.0.0:49163:4568 vaxiom/AXIOVM01TOMCAT7:latest"
-                        RC=0
-                else
-                        echo "ERROR:  building docker image: docker build -t $IMAGE_NAME:latest ."
-                fi
-        else
-                echo "ERROR: Unable to locate directory: $DOCKER_TOMCAT_IMAGE"
-        fi
-
-        cd $TMP_HOME
-        return $RC
+    dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag"		
+    return $?        
 }
 
 buildDockerImages() {
@@ -248,25 +233,29 @@ checkAction() {
         local f="$1"
         local RC=1
 
-        if [ "$f" == "JAVA" ];then
-            dockerBuildJavaImage
-            RC=0
-        fi
+		if [ ! -z "$f" ];then
+			if [ "$f" == "JAVA" && $RC -eq 0 ];then
+				dockerBuildJavaImage
+				RC=$?
+			fi
 
-        if [ "$f" == "TOMCAT" ];then
-            dockerBuildTomcatImage
-            RC=0
-        fi
+			if [ "$f" == "TOMCAT" && $RC -eq 0 ];then
+				dockerBuildTomcatImage
+				RC=$?
+			fi
 
-        if [ "$f" == "BASE" ];then
-            dockerBuildBaseImage
-            RC=0
-        fi
+			if [ "$f" == "BASE" && $RC -eq 0 ];then
+				dockerBuildBaseImage
+				RC=$?
+			fi
 
-        if [ "$f" == "ALL" ];then
-			buildDockerImages
-            RC=0
-        fi
+			if [ "$f" == "ALL" && $RC -eq 0 ];then
+				buildDockerImages
+				RC=$?
+			fi
+		else
+			echo "ERROR:  No action selected.  i.e. JAVA, TOMCAT, BASE, ALL"
+		fi
 
         return $RC
 }
