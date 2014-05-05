@@ -6,7 +6,7 @@ CENTOS_SRC_DIR="centos/"
 DOCK_USER="vaxiom"
 DEFAULT_CONTAINER="centos"
 DEFAULT_TAG="latest"
-DEFAULT_SSH_KEY="id_rsa_pub"
+DEFAULT_SSH_KEY="id_rsa"
 DEFAULT_ACTION="ALL"
 
 container=$1
@@ -43,7 +43,7 @@ DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
 DOCKER_TOMCAT_IMAGE_SRC="/opt/vaxiom-docker/tomcat7/centos/src/"
 
 usage() {
-#./build-docker-image.sh centos latest id_rsa_pub BASE
+# ./build-docker-image.sh centos latest id_rsa BASE
 	local RC=0
 
 	if [ -z $container ];then
@@ -79,6 +79,9 @@ genSSHKeys() {
 	local key="$1"	
 	local pubExt="pub"
 	local pub=${key}.${pubExt}
+	
+	#local key="id_rsa"
+	#local pubExt="id_rsa_pub.pub"
 
 	if [[ ! -f $key ]]; then
 		echo "INFO:  No public ssh key found. Generating a new ssh key"
