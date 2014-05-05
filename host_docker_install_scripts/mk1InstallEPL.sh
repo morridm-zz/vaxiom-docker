@@ -29,19 +29,18 @@ installEpel() {
 
 		echo "Installing the new kernel: yum -y --enablerepo=elrepo-kernel install kernel-ml"
 		yum -y --enablerepo=elrepo-kernel install kernel-ml
-		
-		#echo "INFO:  Replacing $GRUB_BOOT_DEFAULT_VALUE with default=0 in $GRUB_CONF_FILE"
-		#cp -fu $GRUB_CONF_FILE /boot/grub/grub.conf_bkp
-		#sed -i 's/$GRUB_BOOT_DEFAULT_VALUE/default=0/g' $GRUB_CONF_FILE	
 
-		echo "WARNING: Reboot server using cmd: shutdown -r +1"
-		echo "WARNING: RUN SCRIPT AGAIN AFTER REBOOT!!!"
-		echo "WARNING: Don't forget to check /boot/grub/grub.conf to make sure the correct images is booted."
-		###echo "WARNING: Add line selinux=0 to your /boot/grub/grub.conf file..."
-		echo "WARNING:  After reboot run:"
-		echo "			1. vi /etc/sysconfig/selinux"
-		echo "			2. Change 'SELINUX=enforcing' to 'SELINUX=disabled' "
-		echo "          	3. reboot"
+		
+		#.*apples.*
+		echo "==============================================================================================="
+		echo "COMPELTE!  Follow the instructions below..."
+		echo "	1. Don't forget to check /boot/grub/grub.conf to make sure the correct images is booted."
+		echo "		a. sed -ri 's/default=1/default=0/g' /boot/grub/grub.conf"
+		echo "	2. Disable selinux with the two steps below:"
+		echo "		a. vi /etc/sysconfig/selinux and change SELINUX= to SELINUX=disabled"
+		echo "		b. sed -ri 's/^SELINUX=.*/SELINUX=disabled/g' /boot/grub/grub.conf"
+		echo "WARNING: Please reboot the server using cmd: reboot"
+		echo "==============================================================================================="
 	fi
 }
 
