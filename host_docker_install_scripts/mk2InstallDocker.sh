@@ -16,12 +16,12 @@ usage() {
 			RC=1
 		fi
 		
-		if [ -z "$DEFAULT_VAXIOM_GIT_HOME" ];then			
+		if [ -z "$VAXIOM_GIT_HOME" ];then			
 			VAXIOM_GIT_HOME="$DEFAULT_VAXIOM_GIT_HOME"
 			echo "INFO:  	Setting temporary install directory to $VAXIOM_GIT_HOME"
 		fi
 		
-		if [ -z "DEFAULT_AUTHORIZED_KEYS" ];then
+		if [ -z "$AUTHORIZED_KEYS" ];then
 			AUTHORIZED_KEYS="$DEFAULT_AUTHORIZED_KEYS"
 			echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
 		fi
@@ -33,7 +33,7 @@ usage() {
 			echo "INFO:  Usage example 3:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS /tmp/vaxiom_docker/"
 		fi
 		
-		echo "INFO: Running with arguments: $CREATE_USERNAME, $AUTHORIZED_KEYS, VAXIOM_GIT_HOME ..."
+		echo "INFO: Running with arguments: $CREATE_USERNAME, $AUTHORIZED_KEYS, $VAXIOM_GIT_HOME ..."
 		
         return $RC
 }
