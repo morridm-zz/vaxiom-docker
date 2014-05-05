@@ -147,7 +147,8 @@ createMyUserAccount() {
 	
 	chown -R $CREATE_USERNAME:$CREATE_USERNAME /home/$CREATE_USERNAME/.ssh/
 	
-	
+	echo "INFO: Adding $CREATE_USERNAME to docker group."
+	usermod -a -G docker $USER
 	
 	echo "INFO: Running cmd: cat $HOME/$USER/.ssh/authorized_keys >> /home/$CREATE_USERNAME/.ssh/authorized_keys"
 	cat $AUTHORIZED_KEYS >> /home/$CREATE_USERNAME/.ssh/authorized_keys

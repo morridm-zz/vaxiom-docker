@@ -67,19 +67,43 @@ genSSHKeys() {
 deleteDockerImage() {
 	local RC=0
     local IMAGE_NAME="$1"
-	local CURR_DIR=`pwd`
-    
-	cd $BASE_DIR
+    local DOCKER_IMAGES_STR=""
+	local DOCKER_CONTAINER_ID=""
+    local DOCKER_IMAGE_ID=""
 	
-	###sudo su root -c ./delete-docker-images.sh $IMAGE_NAME
-sudo -k <<eof
-echo "Executing 'INFO:  running ./delete-docker-images.sh $IMAGE_NAME' as $(whoami) in directory $BASE_DIR"
-cd $BASE_DIR
-./delete-docker-images.sh $IMAGE_NAME
-eof
-	echo "Finished executing delete-docker-images.sh and switched back to user $(whoami)"
 	
-	cd $CURR_DIR
+    if [ -z "$IMAGE_NAME" ];then
+        echo "ERROR: missing docker image name..."
+        RC=1
+    fi
+	
+	if [ $RC -eq 0 ];then
+		echo "INFO: Searching for $IMAGE_NAME image(s)..."
+		echo "INFO: DELETING EXISTING DOCKER CONTAINERS FOR $IMAGE_NAME..."
+		for container in `docker ps -a | grep $IMAGE_NAME`; do
+			DOCKER_IMAGES_STR=$(echo '$container' | sed 's/  */\ /g')
+			declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
+			DOCKER_CONTAINER_ID${DOCKER_IMAGE_ARRAY[0]}
+			echo "INFO: Deleting container: $DOCKER_CONTAINER_ID ..."
+			docker rm -f $DOCKER_CONTAINER_ID
+			if [ ! $? -eq 0 ];then
+				echo "WARNING: Error deleting container $container"
+			fi
+		done
+
+		echo "INFO: DELETING EXISTING DOCKER IMAGES..."
+		for image in `docker images -a | grep $IMAGE_NAME`; do
+			local DOCKER_IMAGES_STR=$(echo '$image' | sed 's/  */\ /g')
+			declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
+			DOCKER_IMAGE_ID=${DOCKER_IMAGE_ARRAY[2]}
+
+			echo "INFO: Deleting container: $image ..."
+			docker rmi -f $DOCKER_IMAGE_ID
+			if [ $? -eq 0 ];then
+				echo "WARNING: Error deleting image $image"
+			fi
+		done
+    fi
         
     return $RC
 }
