@@ -77,7 +77,7 @@ deleteDockerImage() {
 
 main() {
 	local RC=1
-
+	echo "INFO: Running $(basename $0) as $(whoami)"
 	if ( usage ) 
 	then
 		if ( deleteDockerImage "$IMAGE_NAME_ARG" )

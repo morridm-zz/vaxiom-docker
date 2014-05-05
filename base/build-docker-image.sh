@@ -71,8 +71,11 @@ deleteDockerImage() {
     
 	cd $BASE_DIR
 	
-	echo "Executing './delete-docker-images.sh $IMAGE_NAME' as root"
-	sudo su root -c ./delete-docker-images.sh $IMAGE_NAME
+	echo "Executing './delete-docker-images.sh $IMAGE_NAME' as $(whoami)"
+	###sudo su root -c ./delete-docker-images.sh $IMAGE_NAME
+sudo -i <<eof
+./delete-docker-images.sh $IMAGE_NAME
+eof
 	echo "Finished executing delete-docker-images.sh and switched back to user $(whoami)"
 	
 	cd $CURR_DIR
