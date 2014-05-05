@@ -197,18 +197,17 @@ dockerBuildImage() {
 buildDockerImages() {
 	if ( ! dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag" )
 	then
-			return 1
+		return 1
 	fi
 
 	if ( ! dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag" )
 	then
-			return 1
+		return 1
 	fi
 
 	if ( ! dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag" )
 	then
-			return 1
-
+		return 1
 	fi
 
 	return 0
