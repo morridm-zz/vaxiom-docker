@@ -23,6 +23,7 @@ RUN rm -f *.rpm
 
 RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
 RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
+RUN sed -ri 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
 
 RUN mkdir -p /root/.ssh; chmod 700 /root/.ssh
 ADD src/id_rsa.pub /root/.ssh/authorized_keys
