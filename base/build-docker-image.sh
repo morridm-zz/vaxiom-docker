@@ -195,7 +195,7 @@ dockerBuildImage() {
 }
 
 buildDockerImages() {
-        if ( ! dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"		 )
+        if ( ! dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag" )
         then
                 return 1
         fi
