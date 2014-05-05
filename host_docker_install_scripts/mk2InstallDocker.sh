@@ -185,15 +185,18 @@ main() {
 			then
 				if ( installGit )
 				then
-					if ( installVaxiomDocker )
+					if ( installBridgeUtils )
 					then
-						installDocker
-						DOCKER_VERSION=$(docker --version)
-						if [ -z "$DOCKER_VERSION" ]; then
-							echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
-						else								
-							echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
-							echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
+						if ( installVaxiomDocker )
+						then
+							installDocker
+							DOCKER_VERSION=$(docker --version)
+							if [ -z "$DOCKER_VERSION" ]; then
+								echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
+							else								
+								echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
+								echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
+							fi
 						fi
 					fi
 				fi
