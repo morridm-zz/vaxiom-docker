@@ -194,33 +194,18 @@ dockerBuildImage() {
 	return $RC
 }
 
-dockerBuildBaseImage() {
-	dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"		
-    return $?
-}
-
-dockerBuildJavaImage() {
-	dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag"		
-    return $?        
-}
-
-dockerBuildTomcatImage() {
-    dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag"		
-    return $?        
-}
-
 buildDockerImages() {
-        if ( ! dockerBuildBaseImage )
+        if ( ! dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"		 )
         then
                 return 1
         fi
 
-        if ( ! dockerBuildJavaImage )
+        if ( ! dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag" )
         then
                 return 1
         fi
 
-        if ( ! dockerBuildTomcatImage )
+        if ( ! dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag" )
         then
                 return 1
 
