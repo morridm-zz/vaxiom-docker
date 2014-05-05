@@ -44,7 +44,7 @@ deleteDockerImage() {
         RC=1
     fi
 	
-	if ( $RC -eq 0 ];then
+	if [ $RC -eq 0 ];then
 		echo "INFO: Searching for $IMAGE_NAME image(s)..."
 		echo "INFO: DELETING EXISTING DOCKER CONTAINERS FOR $IMAGE_NAME..."
 		for container in `docker ps -a | grep $IMAGE_NAME`; do

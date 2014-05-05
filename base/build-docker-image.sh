@@ -16,11 +16,11 @@ usage() {
         local RC=0
 		[[ $# -eq 3 ]] && ssh_key=$3
 		
-		if [[ $# -lt 2 ]];then			
+		if [ $# -lt 2 ];then			
 			RC=1
 		fi
 		
-		if [[ ! $RC -eq 0 ]];then
+		if [ ! $RC -eq 0 ];then
 			echo "INFO:  Usage:  $(basename $0) <container name> <tag> [ssh pub key] <optional image action>"
 			echo "INFO:  Usage example 1:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub"
 			echo "INFO:  Usage example 2:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub BASE"
