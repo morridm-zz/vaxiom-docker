@@ -106,7 +106,7 @@ genSSHKeys() {
 		RC=1
 		cp -f "$key" "$DOCKER_BASE_IMAGE_SRC"
 		if [[ $? -eq 0 && -f "$pub" ]];then
-			cat "$pub" >> "USER_SSH_HOME/authorized_keys"
+			cat "$pub" >> "$USER_SSH_HOME/authorized_keys"
 			cp -f "$pub" "$DOCKER_BASE_IMAGE_SRC"
 			if [ $? -eq 0 ];then
 				RC=0
