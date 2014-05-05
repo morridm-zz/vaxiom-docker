@@ -104,16 +104,14 @@ genSSHKeys() {
 	
 	if [[ $RC -eq 0 && -f "$key" ]];then
 		RC=1
-		mv -f "$key" "$DOCKER_BASE_IMAGE_SRC"
+		cp -f "$key" "$DOCKER_BASE_IMAGE_SRC"
 		if [[ $? -eq 0 && -f "$pub" ]];then
 			cat "$pub" >> "USER_SSH_HOME/authorized_keys"
-			mv -f "$pub" "$DOCKER_BASE_IMAGE_SRC"
+			cp -f "$pub" "$DOCKER_BASE_IMAGE_SRC"
 			if [ $? -eq 0 ];then
 				RC=0
 				chmod 700 "$USER_SSH_HOME"
-				chmod 600 "$USER_SSH_HOME/authorized_keys"
-				chown $USER:$USER "$USER_SSH_HOME/authorized_keys"
-				chown -R $USER:$USER $USER_SSH_HOME
+				chmod 600 "$key"
 			fi			
 		fi
 		
