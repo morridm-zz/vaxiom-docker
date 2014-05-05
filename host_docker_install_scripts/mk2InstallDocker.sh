@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 HOME_DIR=`pwd`
-DEFAULT_VAXIOM_GIT_HOME="/opt/vaxiom-docker/"
+DEFAULT_VAXIOM_GIT_HOME="/opt/vaxiom-docker"
 DEFAULT_AUTHORIZED_KEYS="/home/vagrant/.ssh/authorized_keys"
 
 CREATE_USERNAME="$1"
@@ -19,6 +19,7 @@ if [ -z "$AUTHORIZED_KEYS" ];then
 	echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
 fi
 
+DEFAULT_VAXIOM_BASE_INIT_SH="$VAXIOM_GIT_HOME/base/centos/src/init.sh"
 
 usage() {
         local RC=0
@@ -153,8 +154,19 @@ installVaxiomDocker() {
 				fi
 			fi
 		fi
-	else
-		RC=0
+	fi
+	
+	if [[ $RC -eq 0 && ! -f "$DEFAULT_VAXIOM_BASE_INIT_SH" ]];then
+		RC=1
+		echo "ERROR: Unable to locate file: $DEFAULT_VAXIOM_BASE_INIT_SH"
+	fi
+	
+	if [[ $RC -eq 0 && -f "$DEFAULT_VAXIOM_BASE_INIT_SH" ]];then		
+		chmod +x "$DEFAULT_VAXIOM_BASE_INIT_SH"
+		if [ ! $? -eq 0 ];then	   	   
+			RC=1
+			echo "ERROR:  An error occurred running cmd: chmod +x $DEFAULT_VAXIOM_BASE_INIT_SH"
+		fi
 	fi
 	
 	cd $TMP_HOME_DIR
