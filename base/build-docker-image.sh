@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#./build-docker-image.sh centos latest id_rsa BASE
 set -e
 HOME_DIR=`pwd`
 BASE_DIR="/opt/vaxiom-docker/base/"
@@ -250,12 +251,18 @@ buildAllImages() {
 
 checkAction() {
 	local f="$1"
+	local caSSHKey="$2"
 	local RC=0
 	
-	if [ ! -z "$f" ];then
+	if [[ ! -z "$f" && ! -z "$caSSHKey" ]];then
 		if [[ "$f" == "BASE" && $RC -eq 0 ]];then
-			dockerBuildImage "$DOCKER_BASE_IMAGE_NAME" "$DOCKER_BASE_IMAGE" "$tag"
-			RC=$?
+			if ( genSSHKeys "$caSSHKey" )
+			then
+				dockerBuildImage "$DOCKER_BASE_IMAGE_NAME" "$DOCKER_BASE_IMAGE" "$tag"
+				RC=$?
+			else
+				RC=1
+			fi
 		fi
 		
 		if [[ "$f" == "JAVA" && $RC -eq 0 ]];then
@@ -274,7 +281,7 @@ checkAction() {
 		fi
 	else
 		RC=1
-		echo "ERROR:  No action selected.  i.e. JAVA, TOMCAT, BASE, ALL"
+		echo "ERROR:  No action selected or an SSH Key file was not provided.  i.e. JAVA, TOMCAT, BASE, ALL"
 	fi
 
 	return $RC
@@ -288,9 +295,8 @@ main() {
 		if [ -d "$BASE_DIR" ];then
 			cd $BASE_DIR
 				if [ -d "$CENTOS_SRC_DIR" ];then
-						cd $CENTOS_SRC_DIR
-						genSSHKeys "$ssh_key"
-						if ( checkAction "$action" )
+						cd $CENTOS_SRC_DIR						
+						if ( checkAction "$action" "$ssh_key" )
 						then
 								echo "SUCCESS:  Job completed without errors."
 								RC=0
