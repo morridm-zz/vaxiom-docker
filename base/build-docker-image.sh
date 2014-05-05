@@ -9,6 +9,8 @@ DEFAULT_TAG="latest"
 DEFAULT_SSH_KEY="id_rsa"
 DEFAULT_ACTION="ALL"
 
+SSH_CONFIG_FILE="/etc/ssh/sshd_config"
+
 container=$1
 tag=$2
 ssh_key=$3
@@ -84,8 +86,20 @@ genSSHKeys() {
 		
 	#local key="id_rsa"
 	#local pubExt="id_rsa_pub.pub"
+	
+	
+	if [ -f "$SSH_CONFIG_FILE" ];then
+		sudo cp -f "$SSH_CONFIG_FILE" "$DOCKER_BASE_IMAGE_SRC"
+		if [ ! $? -eq 0 ];then
+			RC=1
+			echo "ERROR: Unable to run cmd: sudo cp -f $SSH_CONFIG_FILE $DOCKER_BASE_IMAGE_SRC"
+		fi
+	else
+		RC=1
+		echo "ERROR: Unable to locate the sshd_config file:  $SSH_CONFIG_FILE"
+	fi
 
-	if [ ! -d "$USER_SSH_HOME" ];then
+	if [[ $RC -eq 0 && ! -d "$USER_SSH_HOME" ]];then
 		mkdir -p "$USER_SSH_HOME"
 		if [ ! $? -eq 0 ];then
 			RC=1
