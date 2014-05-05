@@ -215,29 +215,30 @@ buildAllImages() {
 
 checkAction() {
 	local f="$1"
-	local RC=1
-
+	local RC=0
+	
 	if [ ! -z "$f" ];then
-		if [ "$f" == "BASE" && $RC -eq 0 ];then
+		if [[ "$f" == "BASE" && $RC -eq 0 ]];then
 			dockerBuildImage "$DOCKER_BASE_IMAGE_NAME" "$DOCKER_BASE_IMAGE" "$tag"
 			RC=$?
 		fi
 		
-		if [ "$f" == "JAVA" && $RC -eq 0 ];then
+		if [[ "$f" == "JAVA" && $RC -eq 0 ]];then
 			dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag"
 			RC=$?
 		fi
 
-		if [ "$f" == "TOMCAT" && $RC -eq 0 ];then
+		if [[ "$f" == "TOMCAT" && $RC -eq 0 ]];then
 			dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag"
 			RC=$?
 		fi
 
-		if [ "$f" == "ALL" && $RC -eq 0 ];then
+		if [[ "$f" == "ALL" && $RC -eq 0 ]];then
 			buildAllImages
 			RC=$?
 		fi
 	else
+		RC=1
 		echo "ERROR:  No action selected.  i.e. JAVA, TOMCAT, BASE, ALL"
 	fi
 
