@@ -194,8 +194,8 @@ dockerBuildImage() {
 	return $RC
 }
 
-buildDockerImages() {
-	if ( ! dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag" )
+buildAllImages() {
+	if ( ! dockerBuildImage "$DOCKER_BASE_IMAGE_NAME" "$DOCKER_BASE_IMAGE" "$tag" )
 	then
 		return 1
 	fi
@@ -219,7 +219,7 @@ checkAction() {
 
 	if [ ! -z "$f" ];then
 		if [ "$f" == "BASE" && $RC -eq 0 ];then
-			dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"
+			dockerBuildImage "$DOCKER_BASE_IMAGE_NAME" "$DOCKER_BASE_IMAGE" "$tag"
 			RC=$?
 		fi
 		
@@ -234,7 +234,7 @@ checkAction() {
 		fi
 
 		if [ "$f" == "ALL" && $RC -eq 0 ];then
-			buildDockerImages
+			buildAllImages
 			RC=$?
 		fi
 	else
