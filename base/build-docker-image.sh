@@ -78,26 +78,27 @@ genSSHKeys() {
 	local RC=0
 	local key="$1"
 	local pubExt="pub"
-	local pub=${key}.${pubExt}
 	local USER_SSH_HOME="$HOME/.ssh"
+	local key="$USER_SSH_HOME/$key"
+	local pub="${key}.${pubExt}"
 		
 	#local key="id_rsa"
 	#local pubExt="id_rsa_pub.pub"
 
-	if [[ ! -f "$key" ]]; then
-		echo "INFO:  No public ssh key found. Generating a new ssh key"
-		echo "INFO:  Running cmd:  ssh-keygen -q -t rsa -N '' -f $key"
-		ssh-keygen -q -t rsa -N "" -f "$key"
-		if [ ! $? -eq 0 ];then
-			RC=1
-		fi
-	fi
-	
 	if [ ! -d "$USER_SSH_HOME" ];then
 		mkdir -p "$USER_SSH_HOME"
 		if [ ! $? -eq 0 ];then
 			RC=1
 			echo "ERROR: Unable to create directory: $USER_SSH_HOME"
+		fi
+	fi
+	
+	if [[ $RC -eq 0 && ! -f "$key" ]]; then
+		echo "INFO:  No public ssh key found. Generating a new ssh key"
+		echo "INFO:  Running cmd:  ssh-keygen -q -t rsa -N '' -f $key"
+		ssh-keygen -q -t rsa -N "" -f "$key"
+		if [ ! $? -eq 0 ];then
+			RC=1
 		fi
 	fi
 	
