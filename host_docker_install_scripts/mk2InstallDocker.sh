@@ -1,10 +1,41 @@
 #!/usr/bin/env bash
 set -e
 HOME_DIR=`pwd`
-VAXIOM_GIT_HOME="/tmp/vaxiom_docker/"
-AUTHORIZED_KEYS="/home/vagrant/.ssh/authorized_keys"
-CREATE_USERNAME="dmorris"
-CREATE_USERNAME_PWD="dmorris123"
+DEFAULT_VAXIOM_GIT_HOME="/tmp/vaxiom_docker/"
+DEFAULT_AUTHORIZED_KEYS="/home/vagrant/.ssh/authorized_keys"
+
+CREATE_USERNAME="$1"
+CREATE_USERNAME_PWD="$1"
+AUTHORIZED_KEYS="$2"
+VAXIOM_GIT_HOME="$3"
+
+usage() {
+        local RC=0
+		
+		if [ $# -lt 1 ];then			
+			RC=1
+		fi
+		
+		if [ ! $RC -eq 0 ];then
+			echo "INFO:  Usage:  $(basename $0) <required: docker username to create> <optional: authorized key file> <optional: tmp install directory>"
+			echo "INFO:  Usage example 1:  $(basename $0) svc_docker"
+			echo "INFO:  Usage example 2:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS "
+			echo "INFO:  Usage example 3:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS /tmp/vaxiom_docker/"
+		else
+			if [[ $# -eq 1 ]];then
+				echo "INFO: Setting defaults; since temp directory and authorized key file location were not found."
+			
+				VAXIOM_GIT_HOME="$DEFAULT_VAXIOM_GIT_HOME"
+				echo "INFO:  	Setting temporary install directory to $VAXIOM_GIT_HOME"
+				
+				AUTHORIZED_KEYS="$DEFAULT_AUTHORIZED_KEYS"
+				echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
+			fi
+		fi
+		
+        return $RC
+}
+
 
 # Common function to see if a file exists
 does_file_exists(){
@@ -140,6 +171,8 @@ createMyUserAccount() {
 	if [ ! $? -eq 0 ];then	   	   
 		echo "ERROR:  running command:  echo "$CREATE_USERNAME:$CREATE_USERNAME_PWD" | chpasswd"
 		return 1
+	else 
+		echo "WARNING:  Created user $CREATE_USERNAME with password $CREATE_USERNAME_PWD.  PLEASE CHANGE PASSWORD AFTER 1st LOGIN!!!"
 	fi
 	
 	mkdir -p /home/$CREATE_USERNAME/.ssh/
@@ -166,41 +199,44 @@ wrapUp() {
 
 # This is the main function 
 main() {
-	echo "INFO: Verifying installation steps..."
-
-	runYumUpdate
+	local RC=1
 	
-	if ( createMyUserAccount ) 
-	then 
-		if ( isCorrectKernel ) 
+	if ( usage )
+	then
+		runYumUpdate
+		if ( createMyUserAccount ) 
 		then 
-			if ( ! dockerExists )
-			then
-				if ( installGit )
+			if ( isCorrectKernel ) 
+			then 
+				if ( ! dockerExists )
 				then
-					if ( installBridgeUtils )
+					if ( installGit )
 					then
-						if ( installVaxiomDocker )
+						if ( installBridgeUtils )
 						then
-							installDocker
-							DOCKER_VERSION=$(docker --version)
-							if [ -z "$DOCKER_VERSION" ]; then								
-								echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
-							else							
-								echo "INFO: Adding $CREATE_USERNAME to docker group."
-								usermod -a -G docker $USER
-								echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
-								echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
+							if ( installVaxiomDocker )
+							then
+								installDocker
+								DOCKER_VERSION=$(docker --version)
+								if [ -z "$DOCKER_VERSION" ]; then								
+									echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
+								else							
+									echo "INFO: Adding $CREATE_USERNAME to docker group."
+									usermod -a -G docker $USER
+									echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
+									echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
+									RC=0
+								fi
 							fi
 						fi
 					fi
 				fi
-			fi
-		fi	
+			fi	
+		fi
 	fi
-	
 	echo "INFO: Complete!"
 }
 
 ####### MAIN #######
 main
+wrapUp
