@@ -87,10 +87,14 @@ genSSHKeys() {
 		if [ $? -eq 0 ];then
 			if [ -f "$key" ];then
 				mv -f "$key" "$DOCKER_BASE_IMAGE_SRC"
-					if [ -f "$pub" ];then							
-						mv -f "$pub" "$DOCKER_BASE_IMAGE_SRC"
-						RC=0
-					fi
+				if [ -f "$pub" ];then							
+					mv -f "$pub" "$DOCKER_BASE_IMAGE_SRC"
+					RC=0
+				else
+					echo "ERROR:  Unable to run cmd: mv -f $pub $DOCKER_BASE_IMAGE_SRC"
+				fi
+			else
+				echo "ERROR:  Unable to run cmd:  mv -f $key $DOCKER_BASE_IMAGE_SRC"
 			fi
 		else
 			echo "ERROR:  Unable to generate rsa keys:  ssh-keygen -q -t rsa -N '' -f $key"
