@@ -32,12 +32,23 @@ installGit() {
 	if [ $? -eq 0 ];then	   	   
 		RC=0
 	else
-		echo "ERROR:  Unable to generate rsa keys:  ssh-keygen -q -N '' -t rsa -f $gsRSA_KEY"
+		echo "ERROR:  Unable to install git: yum -y install git"
 	fi			
 	
 	return $RC
 }
 
+installBridgeUtils() {
+	local RC=1
+	yum -y install bridge-utils
+	if [ $? -eq 0 ];then	   	   
+		RC=0
+	else
+		echo "ERROR:  Unable to install bridge utils: yum -y install bridge-utils"
+	fi			
+	
+	return $RC
+}
 
 installFedoraPkgr() {
 	echo "Install fedora-packager..."
