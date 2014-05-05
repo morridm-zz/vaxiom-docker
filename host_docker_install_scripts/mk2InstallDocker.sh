@@ -150,9 +150,6 @@ createMyUserAccount() {
 	
 	chown -R $CREATE_USERNAME:$CREATE_USERNAME /home/$CREATE_USERNAME/.ssh/
 	
-	echo "INFO: Adding $CREATE_USERNAME to docker group."
-	usermod -a -G docker $USER
-	
 	echo "INFO: Running cmd: cat $HOME/$USER/.ssh/authorized_keys >> /home/$CREATE_USERNAME/.ssh/authorized_keys"
 	cat $AUTHORIZED_KEYS >> /home/$CREATE_USERNAME/.ssh/authorized_keys
 	echo "$CREATE_USERNAME        ALL=(ALL)       ALL" >> /etc/sudoers.d/$CREATE_USERNAME
@@ -187,9 +184,11 @@ main() {
 						then
 							installDocker
 							DOCKER_VERSION=$(docker --version)
-							if [ -z "$DOCKER_VERSION" ]; then
+							if [ -z "$DOCKER_VERSION" ]; then								
 								echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
-							else								
+							else							
+								echo "INFO: Adding $CREATE_USERNAME to docker group."
+								usermod -a -G docker $USER
 								echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
 								echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
 							fi
