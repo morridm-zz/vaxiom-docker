@@ -32,7 +32,7 @@ installEpel() {
 
 		echo "==============================================================================================="
 		echo "COMPELTE!  Follow the instructions below..."
-		echo "	1. Don't forget to check /boot/grub/grub.conf to make sure the correct images is booted."
+		echo "	1. Don't forget to check /boot/grub/grub.conf to make sure the correct image is booted."
 		echo "		a. sed -ri 's/default=1/default=0/g' /boot/grub/grub.conf"
 		echo "	2. Disable selinux with the two steps below:"
 		echo "		a. vi /etc/sysconfig/selinux and change SELINUX= to SELINUX=disabled"
