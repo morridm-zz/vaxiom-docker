@@ -9,6 +9,17 @@ CREATE_USERNAME_PWD="$1"
 AUTHORIZED_KEYS="$2"
 VAXIOM_GIT_HOME="$3"
 
+if [ -z "$VAXIOM_GIT_HOME" ];then			
+	VAXIOM_GIT_HOME="$DEFAULT_VAXIOM_GIT_HOME"
+	echo "INFO:  	Setting temporary install directory to $VAXIOM_GIT_HOME"
+fi
+
+if [ -z "$AUTHORIZED_KEYS" ];then
+	AUTHORIZED_KEYS="$DEFAULT_AUTHORIZED_KEYS"
+	echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
+fi
+
+
 usage() {
         local RC=0
 		
@@ -16,24 +27,13 @@ usage() {
 			RC=1
 		fi
 		
-		if [ -z "$VAXIOM_GIT_HOME" ];then			
-			VAXIOM_GIT_HOME="$DEFAULT_VAXIOM_GIT_HOME"
-			echo "INFO:  	Setting temporary install directory to $VAXIOM_GIT_HOME"
-		fi
-		
-		if [ -z "$AUTHORIZED_KEYS" ];then
-			AUTHORIZED_KEYS="$DEFAULT_AUTHORIZED_KEYS"
-			echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
-		fi
-		
+		echo "INFO: Running with arguments: $CREATE_USERNAME, $AUTHORIZED_KEYS, $VAXIOM_GIT_HOME ..."
 		if [ ! $RC -eq 0 ];then
 			echo "INFO:  Usage:  $(basename $0) <required: docker username to create> <optional: authorized key file> <optional: tmp install directory>"
 			echo "INFO:  Usage example 1:  $(basename $0) svc_docker"
 			echo "INFO:  Usage example 2:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS "
 			echo "INFO:  Usage example 3:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS /tmp/vaxiom_docker/"
 		fi
-		
-		echo "INFO: Running with arguments: $CREATE_USERNAME, $AUTHORIZED_KEYS, $VAXIOM_GIT_HOME ..."
 		
         return $RC
 }
@@ -165,7 +165,7 @@ createMyUserAccount() {
 	local RC=0
 	
 	if [ ! -f "$AUTHORIZED_KEYS" ];then
-		echo "ERROR:  unable to locate the $AUTHORIZED_KEYS"
+		echo "ERROR:  unable to locate the authorized keys at file location: $AUTHORIZED_KEYS"
 		return 1
 	fi
 	
@@ -191,7 +191,8 @@ createMyUserAccount() {
 	
 	chown -R $CREATE_USERNAME:$CREATE_USERNAME /home/$CREATE_USERNAME/.ssh/
 	
-	echo "INFO: Running cmd: cat $HOME/$USER/.ssh/authorized_keys >> /home/$CREATE_USERNAME/.ssh/authorized_keys"
+	###DEFAULT_AUTHORIZED_KEYS="/home/vagrant/.ssh/authorized_keys"
+	echo "INFO: Running cmd: cat $AUTHORIZED_KEYS >> /home/$CREATE_USERNAME/.ssh/authorized_keys"
 	cat $AUTHORIZED_KEYS >> /home/$CREATE_USERNAME/.ssh/authorized_keys
 	echo "$CREATE_USERNAME        ALL=(ALL)       ALL" >> /etc/sudoers.d/$CREATE_USERNAME
 	chmod 700 /home/$CREATE_USERNAME/.ssh
@@ -230,8 +231,8 @@ main() {
 									echo "ERROR: DOCKER NOT SUCCESSFULLY INSTALLED!"
 								else							
 									echo "INFO: Adding $CREATE_USERNAME to docker group."
-									usermod -a -G docker $USER
-									chown -R $USER:$USER $VAXIOM_GIT_HOME
+									usermod -a -G docker $CREATE_USERNAME
+									chown -R $CREATE_USERNAME:$CREATE_USERNAME $VAXIOM_GIT_HOME
 									echo "INFO: DOCKER VERSION $DOCKER_VERSION SUCCESSFULLY INSTALLED!"
 									echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
 									RC=0
