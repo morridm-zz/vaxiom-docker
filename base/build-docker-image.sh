@@ -80,7 +80,7 @@ genSSHKeys() {
 	local SSH_PATH=".ssh"
 	local pubExt="pub"
 	
-	local key={$HOME}/${SSH_PATH}/${key}
+	local key=${HOME}/${SSH_PATH}/${key}
 	local pub=${key}.${pubExt}
 		
 	#local key="id_rsa"
