@@ -34,7 +34,7 @@ RUN useradd -m dmorris
 RUN echo "dmorris:dmorris123" | chpasswd
 RUN mkdir -p /home/dmorris/.ssh/
 RUN chown -R dmorris:dmorris /home/dmorris/.ssh/
-ADD id_rsa.pub /home/dmorris/.ssh/authorized_keys
+ADD src/id_rsa.pub /home/dmorris/.ssh/authorized_keys
 RUN echo "dmorris        ALL=(ALL)       ALL" >> /etc/sudoers.d/dmorris
 RUN chmod 700 /home/dmorris/.ssh
 RUN chown dmorris:dmorris /home/dmorris/.ssh/authorized_keys
