@@ -220,17 +220,17 @@ checkAction() {
 
 		if [ ! -z "$f" ];then
 			if [ "$f" == "JAVA" && $RC -eq 0 ];then
-				dockerBuildJavaImage
+				dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag"
 				RC=$?
 			fi
 
 			if [ "$f" == "TOMCAT" && $RC -eq 0 ];then
-				dockerBuildTomcatImage
+				dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag"
 				RC=$?
 			fi
 
 			if [ "$f" == "BASE" && $RC -eq 0 ];then
-				dockerBuildBaseImage
+				dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"
 				RC=$?
 			fi
 
