@@ -87,8 +87,9 @@ genSSHKeys() {
 	#local key="id_rsa"
 	#local pubExt="id_rsa_pub.pub"
 	
-	
+	echo "INFO: Generating ssh keys for: $key and $pub ..."
 	if [ -f "$SSH_CONFIG_FILE" ];then
+		echo "INFO: Executing cmd: sudo cp -f $SSH_CONFIG_FILE $DOCKER_BASE_IMAGE_SRC"
 		sudo cp -f "$SSH_CONFIG_FILE" "$DOCKER_BASE_IMAGE_SRC"
 		if [ ! $? -eq 0 ];then
 			RC=1
