@@ -20,10 +20,11 @@ RUN rm -f *.rpm
 
 # unsafe
 #RUN sed -ri 's/#PermitRootLogin yes/PermitRootLogin yes/g' /etc/ssh/sshd_config
-
-RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
-RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
-RUN sed -ri 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
+#RUN sed -ri 's/UsePAM yes/#UsePAM yes/g' /etc/ssh/sshd_config
+#RUN sed -ri 's/#UsePAM no/UsePAM no/g' /etc/ssh/sshd_config
+#RUN sed -ri 's/^SELINUX=.*/SELINUX=disabled/g' /etc/sysconfig/selinux
+ADD src/sshd_config /etc/ssh/sshd_config
+RUN chown root:root /etc/ssh/sshd_config
 
 RUN mkdir -p /root/.ssh; chmod 700 /root/.ssh
 ADD src/id_rsa.pub /root/.ssh/authorized_keys
