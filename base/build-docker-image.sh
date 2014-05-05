@@ -1,22 +1,47 @@
 #!/usr/bin/env bash
+set -e
 HOME_DIR=`pwd`
 BASE_DIR="/opt/vaxiom-docker/base/"
 CENTOS_SRC_DIR="centos/"
+DOCK_USER="vaxiom"
 DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
 DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
 DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
 
-ssh_key="id_rsa_pub"
-DOCK_USER="vaxiom"
+DEFAULT_CONTAINER="centos"
+DEFAULT_TAG="latest"
+DEFAULT_SSH_KEY="id_rsa_pub"
+DEFAULT_ACTION="ALL"
+
 container=$1
 tag=$2
+ssh_key=$3
 action=$4
+
+if [ -z "$container" ];then
+	container="$DEFAULT_CONTAINER"
+fi
+
+if [ -z "$tag" ];then
+	tag="$DEFAULT_TAG"
+fi
+
+if [ -z "$ssh_key" ];then
+	ssh_key="$DEFAULT_SSH_KEY"
+fi
+
+if [ -z "$action" ];then
+	action="$DEFAULT_ACTION"
+fi
 
 usage() {
         local RC=0
-		[[ $# -eq 3 ]] && ssh_key=$3
 		
-		if [ $# -lt 2 ];then			
+		if [ -z $container ];then
+			RC=1
+		fi
+		
+		if [ -z $tag ];then
 			RC=1
 		fi
 		
@@ -207,23 +232,23 @@ checkAction() {
         local RC=1
 
         if [ "$f" == "JAVA" ];then
-                dockerBuildJavaImage
-                RC=0
+            dockerBuildJavaImage
+            RC=0
         fi
 
         if [ "$f" == "TOMCAT" ];then
-                dockerBuildTomcatImage
-                RC=0
+            dockerBuildTomcatImage
+            RC=0
         fi
 
         if [ "$f" == "BASE" ];then
-                dockerBuildBaseImage
-                RC=0
+            dockerBuildBaseImage
+            RC=0
         fi
 
-        if [ -z "$f" ];then
-                buildDockerImages
-                RC=0
+        if [ "$f" == "ALL" ];then
+			buildDockerImages
+            RC=0
         fi
 
         return $RC
