@@ -77,21 +77,12 @@ wrapUp() {
 genSSHKeys() {
 	local RC=0
 	local key="$1"
-	local SSH_PATH=".ssh"
 	local pubExt="pub"
-	
-	local key=${HOME}/${SSH_PATH}/${key}
 	local pub=${key}.${pubExt}
+	local USER_SSH_HOME="$HOME/.ssh"
 		
 	#local key="id_rsa"
 	#local pubExt="id_rsa_pub.pub"
-	
-	#echo "INFO: Running cmd: cat $AUTHORIZED_KEYS >> /home/$CREATE_USERNAME/.ssh/authorized_keys"
-	#cat $AUTHORIZED_KEYS >> /home/$CREATE_USERNAME/.ssh/authorized_keys
-	#echo "$CREATE_USERNAME        ALL=(ALL)       ALL" >> /etc/sudoers.d/$CREATE_USERNAME
-	#chmod 700 /home/$CREATE_USERNAME/.ssh
-	#chown $CREATE_USERNAME:$CREATE_USERNAME /home/$CREATE_USERNAME/.ssh/authorized_keys
-	#chmod 600 /home/$CREATE_USERNAME/.ssh/authorized_keys
 
 	if [[ ! -f "$key" ]]; then
 		echo "INFO:  No public ssh key found. Generating a new ssh key"
@@ -102,13 +93,26 @@ genSSHKeys() {
 		fi
 	fi
 	
+	if [ ! -d "$USER_SSH_HOME" ];then
+		mkdir -p "$USER_SSH_HOME"
+		if [ ! $? -eq 0 ];then
+			RC=1
+			echo "ERROR: Unable to create directory: $USER_SSH_HOME"
+		fi
+	fi
+	
 	if [[ $RC -eq 0 && -f "$key" ]];then
 		RC=1
 		mv -f "$key" "$DOCKER_BASE_IMAGE_SRC"
-		if [[ $? -eq 0 && -f "$pub" ]];then							
+		if [[ $? -eq 0 && -f "$pub" ]];then
+			cat "$pub" >> "USER_SSH_HOME/authorized_keys"
 			mv -f "$pub" "$DOCKER_BASE_IMAGE_SRC"
 			if [ $? -eq 0 ];then
 				RC=0
+				chmod 700 "$USER_SSH_HOME"
+				chmod 600 "$USER_SSH_HOME/authorized_keys"
+				chown $USER:$USER "$USER_SSH_HOME/authorized_keys"
+				chown -R $USER:$USER $USER_SSH_HOME
 			fi			
 		fi
 		
