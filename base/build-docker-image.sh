@@ -74,9 +74,9 @@ wrapUp() {
 
 genSSHKeys() {
 	local RC=1
+	local key="$1"	
 	local pubExt=".pub"
-	local key="$ssh_key"
-	local pub=${ssh_key}.${pubExt}
+	local pub=${key}.${pubExt}
 
 	if [[ ! -f $key ]]; then
 		echo "INFO:  No public ssh key found. Generating a new ssh key"
@@ -276,7 +276,7 @@ main() {
 			cd $BASE_DIR
 				if [ -d "$CENTOS_SRC_DIR" ];then
 						cd $CENTOS_SRC_DIR
-						genSSHKeys
+						genSSHKeys "$ssh_key"
 						if ( checkAction "$action" )
 						then
 								echo "SUCCESS:  Job completed without errors."
