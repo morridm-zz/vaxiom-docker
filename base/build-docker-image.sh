@@ -41,6 +41,7 @@ if [ -z "$action" ];then
 fi
 
 usage() {
+#./build-docker-image.sh centos latest id_rsa_pub BASE
 	local RC=0
 
 	if [ -z $container ];then
@@ -73,22 +74,26 @@ wrapUp() {
 
 genSSHKeys() {
 	local RC=1
+	local pubExt=".pub"
+	local key="$ssh_key"
+	local pub=${ssh_key}.${pubExt}
 
-	if [[ ! -f $ssh_key ]]; then
-		echo "No public ssh key found. Generating a new ssh key"
+	if [[ ! -f $key ]]; then
+		echo "INFO:  No public ssh key found. Generating a new ssh key"
 		echo ""
 
-		ssh-keygen -q -t rsa -N "" -f "$ssh_key"
+		echo "INFO:  Running cmd:  ssh-keygen -q -t rsa -N '' -f $key"
+		ssh-keygen -q -t rsa -N "" -f "$key"
 		if [ $? -eq 0 ];then
-			if [ -f "$ssh_key" ];then
-				mv -f "$ssh_key" "$DOCKER_BASE_IMAGE_SRC"
-					if [ -f "id_rsa.pub" ];then							
-						mv -f "$ssh_key.pub" "$DOCKER_BASE_IMAGE_SRC"
+			if [ -f "$key" ];then
+				mv -f "$key" "$DOCKER_BASE_IMAGE_SRC"
+					if [ -f "$pub" ];then							
+						mv -f "$pub" "$DOCKER_BASE_IMAGE_SRC"
 						RC=0
 					fi
 			fi
 		else
-			echo "ERROR:  Unable to generate rsa keys:  ssh-keygen -q -t rsa -N "" -f id_rsa"
+			echo "ERROR:  Unable to generate rsa keys:  ssh-keygen -q -t rsa -N '' -f $key"
 		fi
 	else
 			RC=0
