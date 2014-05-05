@@ -29,10 +29,10 @@ usage() {
 		
 		echo "INFO: Running with arguments: $CREATE_USERNAME, $AUTHORIZED_KEYS, $VAXIOM_GIT_HOME ..."
 		if [ ! $RC -eq 0 ];then
-			echo "INFO:  Usage:  $(basename $0) <required: docker username to create> <optional: authorized key file> <optional: tmp install directory>"
+			echo "INFO:  Usage:  $(basename $0) <required: docker username to create> <optional: authorized key file> <optional: vaxiom-docker.git install directory>"
 			echo "INFO:  Usage example 1:  $(basename $0) svc_docker"
 			echo "INFO:  Usage example 2:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS "
-			echo "INFO:  Usage example 3:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS /tmp/vaxiom_docker/"
+			echo "INFO:  Usage example 3:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS $DEFAULT_VAXIOM_GIT_HOME"
 		fi
 		
         return $RC
