@@ -195,54 +195,54 @@ dockerBuildImage() {
 }
 
 buildDockerImages() {
-        if ( ! dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag" )
-        then
-                return 1
-        fi
+	if ( ! dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag" )
+	then
+			return 1
+	fi
 
-        if ( ! dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag" )
-        then
-                return 1
-        fi
+	if ( ! dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag" )
+	then
+			return 1
+	fi
 
-        if ( ! dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag" )
-        then
-                return 1
+	if ( ! dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag" )
+	then
+			return 1
 
-        fi
+	fi
 
-        return 0
+	return 0
 }
 
 checkAction() {
-        local f="$1"
-        local RC=1
+	local f="$1"
+	local RC=1
 
-		if [ ! -z "$f" ];then
-			if [ "$f" == "JAVA" && $RC -eq 0 ];then
-				dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag"
-				RC=$?
-			fi
-
-			if [ "$f" == "TOMCAT" && $RC -eq 0 ];then
-				dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag"
-				RC=$?
-			fi
-
-			if [ "$f" == "BASE" && $RC -eq 0 ];then
-				dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"
-				RC=$?
-			fi
-
-			if [ "$f" == "ALL" && $RC -eq 0 ];then
-				buildDockerImages
-				RC=$?
-			fi
-		else
-			echo "ERROR:  No action selected.  i.e. JAVA, TOMCAT, BASE, ALL"
+	if [ ! -z "$f" ];then
+		if [ "$f" == "BASE" && $RC -eq 0 ];then
+			dockerBuildImage "$DOCK_USER/$container" "$DOCKER_BASE_IMAGE" "$tag"
+			RC=$?
+		fi
+		
+		if [ "$f" == "JAVA" && $RC -eq 0 ];then
+			dockerBuildImage "$DOCKER_JAVA_IMAGE_NAME" "$DOCKER_JAVA_IMAGE" "$tag"
+			RC=$?
 		fi
 
-        return $RC
+		if [ "$f" == "TOMCAT" && $RC -eq 0 ];then
+			dockerBuildImage "$DOCKER_TOMCAT_IMAGE_NAME" "$DOCKER_TOMCAT_IMAGE" "$tag"
+			RC=$?
+		fi
+
+		if [ "$f" == "ALL" && $RC -eq 0 ];then
+			buildDockerImages
+			RC=$?
+		fi
+	else
+		echo "ERROR:  No action selected.  i.e. JAVA, TOMCAT, BASE, ALL"
+	fi
+
+	return $RC
 }
 
 main() {
