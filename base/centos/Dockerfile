@@ -53,4 +53,4 @@ EXPOSE 22
 ADD src/init.sh /opt/init.sh
 RUN chmod +x /opt/init.sh
 RUN chown root.root /opt/init.sh
-CMD ./opt/init.sh
+CMD ["/opt/init.sh"]
