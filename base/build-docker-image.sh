@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
-
-#Setup env variables
 HOME_DIR=`pwd`
 BASE_DIR="/opt/vaxiom-docker/base/"
 CENTOS_SRC_DIR="centos/"
-
 DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
 DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
 DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
@@ -15,14 +12,20 @@ container=$1
 tag=$2
 action=$4
 
-###Usage: ./build-docker-image centos latest $HOME/$USER/.ssh/id_rsa.pub
 usage() {
         local RC=0
-        [[ $# -lt 2 ]] && echo "$(basename $0) <container name> <tag> [ssh pub key]" && RC=1
+        [[ $# -lt 2 ]] && echo "$(basename $0) <container name> <tag> [ssh pub key] <optional image action>" && RC=1
+		
+		if [ ! $RC -eq 0 ];then
+			echo "Usage example 1:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub"
+			echo "Usage example 2:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub BASE"
+			echo "Usage example 3:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub JAVA"
+			echo "Usage example 4:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub TOMCAT"
+		fi
+		
         return $RC
 }
 
-# Common function to see if a file exists
 does_file_exists(){
         local f="$1"
         [[ -f "$f" ]] && return 0 || return 1
@@ -60,46 +63,16 @@ genSSHKeys() {
 deleteDockerImage() {
 	local RC=0
     local IMAGE_NAME="$1"
-    local DOCKER_DATE=$(date +%d%m%Y%I%M%S)
-    local DOCKER_IMAGES_STR=""
-	local DOCKER_CONTAINER_ID=""
-    local DOCKER_IMAGE_ID=""
+	local CURR_DIR=`pwd`
+    
+	cd $BASE_DIR
 	
+	echo "Executing './delete-docker-images.sh $IMAGE_NAME' as root"
+	sudo su root -c ./delete-docker-images.sh $IMAGE_NAME
+	echo "Finished executing delete-docker-images.sh and switched back to user $(whoami)"
 	
-    if [ -z "$IMAGE_NAME" ];then
-        echo "ERROR: missing docker image name..."
-        RC=1
-    fi
-
-sudo su <<HERE
-if ( $RC -eq 0 ];then
-	echo "INFO: Searching for $IMAGE_NAME image(s)..."
-	echo "INFO: DELETING EXISTING DOCKER CONTAINERS FOR $IMAGE_NAME..."
-	for container in `docker ps -a | grep $IMAGE_NAME`; do
-		DOCKER_IMAGES_STR=$(echo '$container' | sed 's/  */\ /g')
-		declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
-		DOCKER_CONTAINER_ID${DOCKER_IMAGE_ARRAY[0]}
-		echo "INFO: Deleting container: $DOCKER_CONTAINER_ID ..."
-		docker rm -f $DOCKER_CONTAINER_ID
-		if [ ! $? -eq 0 ];then
-			echo "WARNING: Error deleting container $container"
-		fi
-	done
-
-	echo "INFO: DELETING EXISTING DOCKER IMAGES..."
-	for image in `docker images -a | grep $IMAGE_NAME`; do
-		local DOCKER_IMAGES_STR=$(echo '$image' | sed 's/  */\ /g')
-		declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
-		DOCKER_IMAGE_ID=${DOCKER_IMAGE_ARRAY[2]}
-
-		echo "INFO: Deleting container: $image ..."
-		docker rmi -f $DOCKER_IMAGE_ID
-		if [ $? -eq 0 ];then
-			echo "WARNING: Error deleting image $image"
-		fi
-	done
-fi
-HERE
+	cd $CURR_DIR
+        
     return $RC
 }
 
