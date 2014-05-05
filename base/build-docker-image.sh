@@ -255,31 +255,31 @@ checkAction() {
 }
 
 main() {
-        local RC=1
-		
-		if ( usage ) 
-		then
-			if [ -d "$BASE_DIR" ];then
-				cd $BASE_DIR
-					if [ -d "$CENTOS_SRC_DIR" ];then
-							cd $CENTOS_SRC_DIR
-							genSSHKeys
-							if ( checkAction "$action" )
-							then
-									echo "SUCCESS:  Job completed without errors."
-									RC=0
-							else
-									echo "ERROR: An error occurred... oops"
-							fi
-					else
-							echo "ERROR: Unable to locate directory: $CENTOS_SRC_DIR"
-					fi
-			else
-					echo "ERROR: Unable to locate directory: $BASE_DIR"
-			fi
+	local RC=1
+	
+	if ( usage ) 
+	then
+		if [ -d "$BASE_DIR" ];then
+			cd $BASE_DIR
+				if [ -d "$CENTOS_SRC_DIR" ];then
+						cd $CENTOS_SRC_DIR
+						genSSHKeys
+						if ( checkAction "$action" )
+						then
+								echo "SUCCESS:  Job completed without errors."
+								RC=0
+						else
+								echo "ERROR: An error occurred... oops"
+						fi
+				else
+						echo "ERROR: Unable to locate directory: $CENTOS_SRC_DIR"
+				fi
+		else
+				echo "ERROR: Unable to locate directory: $BASE_DIR"
 		fi
-		
-		return $RC
+	fi
+	
+	return $RC
 }
 
 main
