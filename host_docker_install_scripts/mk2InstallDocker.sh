@@ -26,57 +26,49 @@ dockerExists() {
 	fi
 }
 
-installGit() {
+runYumInstall() {
 	local RC=1
-	yum -y install git
-	if [ $? -eq 0 ];then	   	   
-		RC=0
-	else
-		echo "ERROR:  Unable to install git: yum -y install git"
-	fi			
+	local pkg="$1"
+
+	echo "INFO:  Installing package $pkg ..."
+	if [ ! -z "$pkg" ];then
+		yum -y install "$pkg"
+		if [ $? -eq 0 ];then	   	   
+			RC=0
+		fi			
+	fi
+	
+	if [ ! $RC -eq 0 ];then
+		echo "ERROR:  Unable to install git: yum -y install $pkg"
+	fi
 	
 	return $RC
+}
+
+runYumUpdate() {
+	echo "INFO: Checking current installation: yum -y update..."
+	yum -y update
+	return 0
+}
+
+installGit() {
+	runYumInstall "git"
+	return $?
 }
 
 installBridgeUtils() {
-	local RC=1
-	yum -y install bridge-utils
-	if [ $? -eq 0 ];then	   	   
-		RC=0
-	else
-		echo "ERROR:  Unable to install bridge utils: yum -y install bridge-utils"
-	fi			
-	
-	return $RC
+	runYumInstall "bridge-utils"
+	return $?
 }
 
 installFedoraPkgr() {
-	echo "Install fedora-packager..."
-	yum -y install fedora-packager
-	return 0
+	runYumInstall "fedora-packager"
+	return $?
 }
 
-# Installs the http://Docker.io package
 installDocker() {
-	local RC=1
-	echo "INFO: Installing docker:  yum -y install docker-io"
-	yum -y install docker-io
-	if [ $? -eq 0 ];then	   	   
-		chkconfig docker on
-		RC=0
-	else
-		echo "ERROR:  Unable to install docker using:  yum -y install docker-io"
-	fi			
-	
-	return $RC
-}
-
-# Verify all rpm packages are current
-runYumUpdate() {
-	echo "INFO: Checking current installation: yum -y update..."
-	###installFedoraPkgr
-	yum -y update
-	return 0
+	runYumInstall "docker-io"
+	return $?
 }
 
 # Verify elrepo is installed and running docker compatible kernel
