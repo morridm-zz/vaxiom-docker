@@ -163,6 +163,10 @@ createMyUserAccount() {
 	return $RC
 }
 
+wrapUp() {
+	cd $HOME_DIR
+}
+
 # This is the main function 
 main() {
 	echo "INFO: Verifying installation steps..."
