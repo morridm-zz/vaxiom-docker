@@ -12,8 +12,18 @@ VAXIOM_GIT_HOME="$3"
 usage() {
         local RC=0
 		
-		if [ $# -lt 1 ];then			
+		if [ -z "$CREATE_USERNAME" ];then
 			RC=1
+		fi
+		
+		if [ -z "$DEFAULT_VAXIOM_GIT_HOME" ];then			
+			VAXIOM_GIT_HOME="$DEFAULT_VAXIOM_GIT_HOME"
+			echo "INFO:  	Setting temporary install directory to $VAXIOM_GIT_HOME"
+		fi
+		
+		if [ -z "DEFAULT_AUTHORIZED_KEYS" ];then
+			AUTHORIZED_KEYS="$DEFAULT_AUTHORIZED_KEYS"
+			echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
 		fi
 		
 		if [ ! $RC -eq 0 ];then
@@ -21,17 +31,9 @@ usage() {
 			echo "INFO:  Usage example 1:  $(basename $0) svc_docker"
 			echo "INFO:  Usage example 2:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS "
 			echo "INFO:  Usage example 3:  $(basename $0) svc_docker $DEFAULT_AUTHORIZED_KEYS /tmp/vaxiom_docker/"
-		else
-			if [[ $# -eq 1 ]];then
-				echo "INFO: Setting defaults; since temp directory and authorized key file location were not found."
-			
-				VAXIOM_GIT_HOME="$DEFAULT_VAXIOM_GIT_HOME"
-				echo "INFO:  	Setting temporary install directory to $VAXIOM_GIT_HOME"
-				
-				AUTHORIZED_KEYS="$DEFAULT_AUTHORIZED_KEYS"
-				echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
-			fi
 		fi
+		
+		echo "INFO: Running with arguments: $CREATE_USERNAME, $AUTHORIZED_KEYS, VAXIOM_GIT_HOME ..."
 		
         return $RC
 }
