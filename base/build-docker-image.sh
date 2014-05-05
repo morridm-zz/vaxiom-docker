@@ -6,7 +6,7 @@ DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
 DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
 DOCKER_TOMCAT_IMAGE="/opt/vaxiom-docker/tomcat7/centos/"
 
-ssh_key=id_rsa_pub
+ssh_key="id_rsa_pub"
 DOCK_USER="vaxiom"
 container=$1
 tag=$2
@@ -14,12 +14,14 @@ action=$4
 
 usage() {
         local RC=0
-		if [ $# -lt 2 ];then			
+		[[ $# -eq 3 ]] && ssh_key=$3
+		
+		if [[ $# -lt 2 ]];then			
 			RC=1
 		fi
 		
-		if [ ! $RC -eq 0 ];then
-			echo "INFO:  Usage:$(basename $0) <container name> <tag> [ssh pub key] <optional image action>"
+		if [[ ! $RC -eq 0 ]];then
+			echo "INFO:  Usage:  $(basename $0) <container name> <tag> [ssh pub key] <optional image action>"
 			echo "INFO:  Usage example 1:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub"
 			echo "INFO:  Usage example 2:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub BASE"
 			echo "INFO:  Usage example 3:  $(basename $0) centos latest $HOME/$USER/.ssh/id_rsa.pub JAVA"
@@ -40,8 +42,7 @@ wrapUp() {
 
 genSSHKeys() {
         local RC=1
-        [[ $# -eq 3 ]] && ssh_key=$3
-
+        
         if [[ ! -f $ssh_key ]]; then
             echo "No public ssh key found. Generating a new ssh key"
             echo ""
