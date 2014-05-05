@@ -1,5 +1,5 @@
 FROM vaxiom/centos:latest
-MAINTAINER David Morris, david.morris@axpm.com
+MAINTAINER David Morris, morridm@gmail.com
 
 #VARIABLES
 ENV JAVA_HEAP_SIZE 512

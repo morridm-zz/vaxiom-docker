@@ -7,7 +7,7 @@
 #  ssh -p 49155 dmorris@172.17.42.1
 # tag: latest
 FROM centos:latest
-MAINTAINER David Morris <morridm@gmail.com>
+MAINTAINER David Morris morridm@gmail.com
 
 RUN yum -y update
 RUN echo 'root:root123' | chpasswd

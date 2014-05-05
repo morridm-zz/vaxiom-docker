@@ -1,5 +1,5 @@
 FROM vaxiom/AXIOJAVA8:latest
-MAINTAINER David Morris, david.morris@axpm.com
+MAINTAINER David Morris, morridm@gmail.com
 
 #VARIABLES
 ENV TOMCAT_VERSION 7.0.53
