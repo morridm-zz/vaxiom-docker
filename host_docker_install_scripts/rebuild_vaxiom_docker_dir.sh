@@ -21,6 +21,43 @@ does_file_exists(){
 	[[ -f "$f" ]] && return 0 || return 1
 }
 
+clearDockerImages() {
+	local RC=0
+	local iRunningContainers=$(docker ps -q | wc -l)
+	local iContainers=$(docker ps -a -q | wc -l)
+	local iImages=$(docker images -a -q | wc -l)
+	
+	if [[ $RC -eq 0 && $iRunningContainers -gt 0 ]];then
+		echo "INFO: Stopping containers: $(docker ps)"
+		docker stop $(docker ps -q)
+		if [ ! $? -eq 0 ];then
+			RC=1
+		fi
+	fi
+	
+	if [[ $RC -eq 0 && $iContainers -gt 0 ]];then
+		echo "INFO: Removing containers: $(docker ps -a)"
+		docker rm $(docker ps -a -q)
+		if [ ! $? -eq 0 ];then
+			RC=1
+		fi
+	fi
+
+	if [[ $RC -eq 0 && $iImages -gt 0 ]];then
+		echo "INFO: Removing images: $(docker images -a)"
+		docker rmi $(docker images -a -q)
+		if [ ! $? -eq 0 ];then
+			RC=1
+		fi
+	fi
+	
+	if [ ! $RC -eq 0 ];then
+		echo "WARNING: Unable to remove existing docker images!"
+	fi
+	
+	return 0
+}
+
 createDirectory() {
 	local RC=0
 	local dirName="$1"
@@ -77,7 +114,8 @@ installVaxiomDocker() {
 	fi
 	
 	if [[ $RC=0 && -d "$VAXIOM_GIT_HOME" ]];then
-		find $VAXIOM_GIT_HOME -iname "*.sh" | xargs chmod +x
+		sudo find $VAXIOM_GIT_HOME -iname "*.sh" | sudo xargs chmod +x
+		sudo chown -R $USER:$USER "$VAXIOM_GIT_HOME"
 		if [ ! $RC -eq 0 ];then
 			echo "ERROR: running cmd:  find $VAXIOM_GIT_HOME -iname "*.sh" | xargs chmod +x"
 		fi
@@ -95,11 +133,12 @@ wrapUp() {
 main() {
 	local RC=1
 
+	clearDockerImages
 	if ( installVaxiomDocker )
 	then
 		RC=0
 	fi
-
+	
 	return $RC
 }
 
