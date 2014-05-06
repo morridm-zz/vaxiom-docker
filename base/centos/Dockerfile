@@ -49,7 +49,7 @@ RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /etc/supervisor/conf.d
 ADD src/supervisor.conf /etc/supervisor.conf
 ADD src/sshd.sv.conf /etc/supervisor/conf.d/
-RUN chown root.root /etc/supervisord.conf
+RUN chown root.root /etc/supervisor.conf
 
 ADD src/init.sh /opt/init.sh
 RUN chmod +x /opt/init.sh
