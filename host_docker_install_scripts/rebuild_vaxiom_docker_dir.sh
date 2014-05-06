@@ -76,6 +76,13 @@ installVaxiomDocker() {
 		echo "ERROR: Unable to install $GIT_LIBRARY!!!"
 	fi
 	
+	if [[ $RC=0 && -d "$VAXIOM_GIT_HOME" ]];then
+		find $VAXIOM_GIT_HOME -iname "*.sh" | xargs chmod +x
+		if [ ! $RC -eq 0 ];then
+			echo "ERROR: running cmd:  find $VAXIOM_GIT_HOME -iname "*.sh" | xargs chmod +x"
+		fi
+	fi
+	
 	cd $TMP_HOME_DIR
 	return $RC
 }
@@ -83,6 +90,7 @@ installVaxiomDocker() {
 wrapUp() {
     cd $HOME_DIR
 }
+
 
 main() {
 	local RC=1

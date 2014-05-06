@@ -52,10 +52,11 @@ ADD src/supervisord.conf /etc/supervisord.conf
 ADD src/sshd.sv.conf /etc/supervisor/conf.d/
 ADD src/init.sh /opt/init.sh
 RUN chmod +x /opt/init.sh
-
-EXPOSE 22
 VOLUME /var/log/supervisor
 
+EXPOSE 22
+
+#RUN find /opt -iname "*.sh" | xargs chmod +x
 #ENTRYPOINT ["/usr/bin/supervisord", "-n"]
 ##ENTRYPOINT /opt/init.sh
 ####RUN easy_install supervisor
