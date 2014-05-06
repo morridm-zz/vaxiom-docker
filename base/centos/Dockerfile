@@ -28,7 +28,7 @@ RUN pip install supervisor
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /etc/supervisor/conf.d
 ADD src/supervisord.conf /etc/supervisord.conf
-ADD src/sshd.sv.conf /etc/supervisor/conf.d/
+ADD src/sshd.sv.conf /etc/supervisor/conf.d/sshd.conf
 ADD src/start_sshd_service.sh /opt/start_sshd_service.sh
 RUN chmod +x /opt/start_sshd_service.sh
 
@@ -53,7 +53,9 @@ RUN echo "dmorris        ALL=(ALL)       ALL" >> /etc/sudoers.d/dmorris && \
 	
 VOLUME /var/log/supervisor
 EXPOSE 22
+CMD /usr/bin/supervisord -n
 
+#CMD ["/usr/bin/supervisord","-n", "-c", "/etc/supervisord.conf"]
 #RUN find /opt -iname "*.sh" | xargs chmod +x
 #ENTRYPOINT ["/usr/bin/supervisord", "-n"]
 ##ENTRYPOINT /opt/start_sshd_service.sh
