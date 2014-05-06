@@ -276,8 +276,13 @@ checkAction() {
 		fi
 
 		if [[ "$f" == "ALL" && $RC -eq 0 ]];then
-			buildAllImages
-			RC=$?
+			if ( genSSHKeys "$caSSHKey" )
+			then
+				buildAllImages
+				RC=$?
+			else
+				RC=1
+			fi
 		fi
 	else
 		RC=1
