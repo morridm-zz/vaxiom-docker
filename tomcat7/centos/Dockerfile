@@ -81,4 +81,4 @@ EXPOSE 80 8080 8005 8443 443
 
 ###CMD service tomcat7 start && tail -F /opt/tomcat7/logs/*
 
-ENTRYPOINT /opt/launch_tomcat.sh
+CMD /opt/launch_tomcat.sh
