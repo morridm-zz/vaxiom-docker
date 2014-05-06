@@ -44,8 +44,13 @@ RUN chown dmorris:dmorris /home/dmorris/.ssh/authorized_keys
 RUN chmod 600 /home/dmorris/.ssh/authorized_keys
 
 # supervisord for sshd
-RUN yum -y update && yum -y install python-pip && yum -y install python-setuptools && pip install pip --upgrade
-RUN pip install supervisor
+ONBUILD RUN yum -y update && yum -y upgrade && \
+            yum -y install sudo which man curl make \
+			yum -y install python-pip \
+			yum -y install python-setuptools \
+			pip install pip --upgrade \
+			pip install supervisor
+			
 ####RUN easy_install supervisor
 
 RUN mkdir -p /var/run/sshd
