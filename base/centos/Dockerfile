@@ -45,15 +45,14 @@ RUN chmod 600 /home/dmorris/.ssh/authorized_keys
 # supervisord for sshd
 RUN yum -y install python-setuptools
 RUN easy_install supervisor
-ADD src/supervisord.conf /etc/
+RUN mkdir -p /var/log/supervisor
+RUN mkdir -p /etc/supervisor/conf.d
+ADD src/supervisor.conf /etc/supervisor.conf
+ADD src/sshd.sv.conf /etc/supervisor/conf.d/
 RUN chown root.root /etc/supervisord.conf
-
-##EXPOSE 22 80 443 3306 4444 4567 4568 27017 27018 27019 28017
-
-EXPOSE 22
 
 ADD src/init.sh /opt/init.sh
 RUN chmod +x /opt/init.sh
 RUN chown root.root /opt/init.sh
-
-ENTRYPOINT /opt/init.sh
+EXPOSE 22
+##ENTRYPOINT /opt/init.sh

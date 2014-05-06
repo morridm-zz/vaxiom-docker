@@ -77,13 +77,12 @@ RUN chmod +x /opt/tomcat7/bin/startup.sh
 RUN chmod +x /opt/tomcat7/bin/shutdown.sh
 RUN chmod +x /opt/tomcat7/bin/*.sh
 
-EXPOSE 80 8080 8005 8443 443
+ADD src/tomcat.sv.conf /etc/supervisor/conf.d/
+EXPOSE 80 443 8000 8005 8080 8443
+CMD supervisord -c /etc/supervisor.conf
 
 #ENTRYPOINT ["/bin/bash"]
 #CMD [".//opt/launch_tomcat.sh"]
-
 ##EXPOSE 80 443 3306 4444 4567 4568 27017 27018 27019 28017
-
 ###CMD service tomcat7 start && tail -F /opt/tomcat7/logs/*
-
 ###CMD /opt/launch_tomcat.sh

@@ -17,3 +17,4 @@ RUN update-alternatives --install /usr/bin/javac javac /usr/java/jdk1.8*/bin/jav
 RUN update-alternatives --install /usr/bin/jar jar /usr/java/jdk1.8*/bin/jar 1065
 RUN update-alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.8*/bin/javaws 1065
 RUN echo "JAVA_HOME=/usr/java/jdk1.8.0_05" >> /etc/environment
+ENV JAVA_HOME /usr/java/jdk1.8.0_05
