@@ -19,7 +19,7 @@ if [ -z "$AUTHORIZED_KEYS" ];then
 	echo "INFO:  	Defaulting keys file location to $AUTHORIZED_KEYS"
 fi
 
-DEFAULT_VAXIOM_BASE_INIT_SH="$VAXIOM_GIT_HOME/base/centos/src/init.sh"
+DEFAULT_VAXIOM_BASE_INIT_SH="$VAXIOM_GIT_HOME/base/centos/src/start_sshd_service.sh"
 
 usage() {
         local RC=0
@@ -69,6 +69,8 @@ runYumInstall() {
 		yum -y install "$pkg"
 		if [ $? -eq 0 ];then	   	   
 			RC=0
+		else
+			echo "ERROR:  An error occurred running: yum -y install $pkg"
 		fi			
 	fi
 	
