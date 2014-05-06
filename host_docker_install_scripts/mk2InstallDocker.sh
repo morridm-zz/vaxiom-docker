@@ -251,6 +251,8 @@ main() {
 									echo "INFO: Reboot then run 'sudo service docker start' to start the Docker.io service manually..."
 									RC=0
 								fi
+							else
+								echo "ERROR:  Unable to run install of Vaxiom-Docker.  See prior yum install steps for errors."
 							fi
 						fi
 					fi
