@@ -4,6 +4,7 @@
 # DOCKER-VERSION 0.9x
 #
 # Usage: docker run -d -p 0.0.0.0:49153:22 -p 0.0.0.0:49154:27018 -p 0.0.0.0:49155:28017 -p 0.0.0.0:49156:3306 -p 0.0.0.0:49157:4444 -p 0.0.0.0:49158:4567 -p 0.0.0.0:49159:80 -p 0.0.0.0:49160:27017 -p 0.0.0.0:49161:27019 -p 0.0.0.0:49162:443 -p 0.0.0.0:49163:4568 vaxiom/centos:latest
+#  docker run -d -P vaxiom/centos:latest "/usr/bin/supervisord -c /etc/supervisor.conf"
 #  ssh -p 49155 dmorris@172.17.42.1
 # tag: latest
 FROM centos:latest
@@ -45,6 +46,8 @@ RUN chmod 600 /home/dmorris/.ssh/authorized_keys
 # supervisord for sshd
 RUN yum -y install python-setuptools
 RUN easy_install supervisor
+
+RUN mkdir -p /var/run/sshd
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /etc/supervisor/conf.d
 ADD src/supervisor.conf /etc/supervisor.conf
