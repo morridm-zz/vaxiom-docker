@@ -77,6 +77,23 @@ wrapUp() {
     cd $HOME_DIR
 }
 
+dockerStopContainer() {
+	local RC=0
+	local containerId="$1"
+	
+	if [ ! -z "$containerId" ];then
+		if [ $(docker ps -q | grep '$containerId' | wc -l) -gt 0 ];then
+			echo "INFO: Stopping container: $containerId ..."
+			docker stop "$containerId"
+			if [ ! $? -eq 0 ];then
+				RC=1
+			fi
+		fi
+	fi
+	
+	return $RC
+}
+
 genSSHKeys() {
 	local RC=0
 	local key="$1"
