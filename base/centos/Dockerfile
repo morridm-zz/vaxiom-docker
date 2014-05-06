@@ -27,10 +27,11 @@ RUN pip install pip --upgrade
 RUN pip install supervisor
 RUN mkdir -p /var/log/supervisor
 RUN mkdir -p /etc/supervisor/conf.d
-ADD src/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD src/supervisord.conf /etc/supervisord.conf
 ADD src/sshd.sv.conf /etc/supervisor/conf.d/sshd.conf
 ADD src/start_sshd_service.sh /opt/start_sshd_service.sh
 RUN chmod +x /opt/start_sshd_service.sh
+RUN chmod 755 /etc/supervisord.conf
 
 #Setup SSH
 RUN mkdir -p /var/run/sshd && \
@@ -63,3 +64,4 @@ CMD ["/usr/bin/supervisord"]
 ####RUN easy_install supervisor
 ###RUN chown root.root /etc/supervisord.conf
 ###RUN chown root.root /opt/start_sshd_service.sh
+###ADD src/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
