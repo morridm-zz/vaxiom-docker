@@ -188,7 +188,7 @@ deleteDockerImage() {
 			declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
 			DOCKER_IMAGE_ID=${DOCKER_IMAGE_ARRAY[2]}
 
-			echo "INFO: Deleting container: $image ..."
+			echo "INFO: Deleting image: $image ..."
 			docker rmi -f $DOCKER_IMAGE_ID
 			if [ $? -eq 0 ];then
 				echo "WARNING: Error deleting image $image"
