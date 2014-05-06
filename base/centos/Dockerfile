@@ -24,19 +24,20 @@ RUN chown root:root /etc/ssh/sshd_config
 
 RUN mkdir -p /root/.ssh; chmod 700 /root/.ssh
 ADD src/id_rsa.pub /root/.ssh/authorized_keys
+
 RUN chown root.root /root/.ssh/*; chmod 600 /root/.ssh/*
 ADD src/nopasswd /etc/sudoers.d/nopasswd
 RUN chown root.root /etc/sudoers.d/*
 
-RUN useradd -m dmorris
-RUN echo "dmorris:dmorris123" | chpasswd
-RUN mkdir -p /home/dmorris/.ssh/
-RUN chown -R dmorris:dmorris /home/dmorris/.ssh/
+RUN useradd -m dmorris && \
+	echo "dmorris:dmorris123" | chpasswd && \
+	mkdir -p /home/dmorris/.ssh/ && \
+	chown -R dmorris:dmorris /home/dmorris/.ssh/
 ADD src/id_rsa.pub /home/dmorris/.ssh/authorized_keys
-RUN echo "dmorris        ALL=(ALL)       ALL" >> /etc/sudoers.d/dmorris
-RUN chmod 700 /home/dmorris/.ssh
-RUN chown dmorris:dmorris /home/dmorris/.ssh/authorized_keys
-RUN chmod 600 /home/dmorris/.ssh/authorized_keys
+RUN echo "dmorris        ALL=(ALL)       ALL" >> /etc/sudoers.d/dmorris && \
+	chmod 700 /home/dmorris/.ssh && \
+	chown dmorris:dmorris /home/dmorris/.ssh/authorized_keys && \
+	chmod 600 /home/dmorris/.ssh/authorized_keys
 
 # supervisord for sshd
 RUN yum -y update && yum -y upgrade && \
