@@ -79,8 +79,8 @@ RUN chmod +x /opt/tomcat7/bin/*.sh
 
 EXPOSE 80 8080 8005 8443 443
 
-ENTRYPOINT ["/bin/bash"]
-CMD [".//opt/launch_tomcat.sh"]
+#ENTRYPOINT ["/bin/bash"]
+#CMD [".//opt/launch_tomcat.sh"]
 
 ##EXPOSE 80 443 3306 4444 4567 4568 27017 27018 27019 28017
 
