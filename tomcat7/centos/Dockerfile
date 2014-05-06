@@ -71,8 +71,14 @@ RUN chkconfig --list tomcat7
 RUN keytool -genkey -keyalg RSA -alias tomcat7 -keypass ChAngeThis1 -storepass ChAngeThis1 -dname "CN=dmo, OU=IT, O=Little Rock, L=Arkansas, ST=AR, C=USA" -keystore /usr/share/tomcat7/.keystore
 RUN touch /etc/sysconfig/network
 
+ADD src/launch_tomcat.sh /opt/launch_tomcat.sh
+RUN chmod +x /opt/launch_tomcat.sh
+RUN chmod +x /opt/tomcat7/bin/startup.sh
+RUN chmod +x /opt/tomcat7/bin/shutdown.sh
+
 EXPOSE 80 8080 8005 8443 443
 ##EXPOSE 80 443 3306 4444 4567 4568 27017 27018 27019 28017
 
-CMD service tomcat7 start && tail -F /opt/tomcat7/logs/*
+###CMD service tomcat7 start && tail -F /opt/tomcat7/logs/*
 
+ENTRYPOINT /opt/launch_tomcat.sh
