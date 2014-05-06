@@ -160,6 +160,17 @@ deleteDockerImage() {
 	if [ $RC -eq 0 ];then
 		echo "INFO: Searching for $IMAGE_NAME image(s)..."
 		echo "INFO: DELETING EXISTING DOCKER CONTAINERS FOR $IMAGE_NAME..."
+		for container in `docker ps | grep $IMAGE_NAME`; do
+			DOCKER_IMAGES_STR=$(echo '$container' | sed 's/  */\ /g')
+			declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
+			DOCKER_CONTAINER_ID${DOCKER_IMAGE_ARRAY[0]}
+			echo "INFO: Deleting container: $DOCKER_CONTAINER_ID ..."
+			docker stop $DOCKER_CONTAINER_ID
+			if [ ! $? -eq 0 ];then
+				echo "WARNING: Error deleting container $container"
+			fi
+		done
+		
 		for container in `docker ps -a | grep $IMAGE_NAME`; do
 			DOCKER_IMAGES_STR=$(echo '$container' | sed 's/  */\ /g')
 			declare -a DOCKER_IMAGE_ARRAY=($DOCKER_IMAGES_STR)
