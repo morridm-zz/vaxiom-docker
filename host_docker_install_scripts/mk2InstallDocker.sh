@@ -61,21 +61,19 @@ dockerExists() {
 }
 
 runYumInstall() {
-	local RC=1
+	local RC=0
 	local pkg="$1"
 
 	echo "INFO:  Installing package $pkg ..."
 	if [ ! -z "$pkg" ];then
 		yum -y install "$pkg"
-		if [ $? -eq 0 ];then	   	   
-			RC=0
-		else
+		if [ ! $? -eq 0 ];then	   	   
+			RC=1
 			echo "ERROR:  An error occurred running: yum -y install $pkg"
 		fi			
-	fi
-	
-	if [ ! $RC -eq 0 ];then
-		echo "ERROR:  Unable to install git: yum -y install $pkg"
+	else
+		RC=1
+		echo "ERROR: A yum package name is required: yum -y install ?????"
 	fi
 	
 	return $RC
@@ -183,10 +181,13 @@ createMyUserAccount() {
 		return 1
 	fi
 	
-	useradd -m $CREATE_USERNAME
-	if [ ! $? -eq 0 ];then	   	   
-		echo "ERROR:  running command:  useradd -m $CREATE_USERNAME"
-		return 1
+	getent passwd $CREATE_USERNAME > /dev/null 2&>1
+	if [ ! $? -eq 0 ]; then
+		useradd -m $CREATE_USERNAME
+		if [ ! $? -eq 0 ];then	   	   
+			echo "ERROR:  running command:  useradd -m $CREATE_USERNAME"
+			return 1
+		fi
 	fi
 	
 	echo "$CREATE_USERNAME:$CREATE_USERNAME_PWD" | chpasswd
