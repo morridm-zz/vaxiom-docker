@@ -9,8 +9,7 @@ DEFAULT_CONTAINER="centos"
 DEFAULT_TAG="latest"
 DEFAULT_SSH_KEY="id_rsa"
 DEFAULT_ACTION="ALL"
-
-SSH_CONFIG_FILE="/etc/ssh/sshd_config"
+DEFAULT_SSH_CONFIG_FILE="/etc/ssh/sshd_config"
 
 container=$1
 tag=$2
@@ -36,6 +35,7 @@ fi
 DOCKER_BASE_IMAGE_NAME="$DOCK_USER/$container"
 DOCKER_BASE_IMAGE="/opt/vaxiom-docker/base/centos/"
 DOCKER_BASE_IMAGE_SRC="/opt/vaxiom-docker/base/centos/src/"
+DOCKER_BASE_SSH_CONFIG_FILE="/opt/vaxiom-docker/base/centos/src/sshd_config"
 
 DOCKER_JAVA_IMAGE_NAME="vaxiom/AXIOJAVA8"
 DOCKER_JAVA_IMAGE="/opt/vaxiom-docker/java8/centos/"
@@ -106,16 +106,18 @@ genSSHKeys() {
 	#local pubExt="id_rsa_pub.pub"
 	
 	echo "INFO: Generating ssh keys for: $key and $pub ..."
-	if [ -f "$SSH_CONFIG_FILE" ];then
-		echo "INFO: Executing cmd: sudo cp -f $SSH_CONFIG_FILE $DOCKER_BASE_IMAGE_SRC"
-		sudo cp -f "$SSH_CONFIG_FILE" "$DOCKER_BASE_IMAGE_SRC"
+	if [[ ! -f "$DOCKER_BASE_SSH_CONFIG_FILE" && -f "$DEFAULT_SSH_CONFIG_FILE" ]];then
+		echo "INFO: Executing cmd: sudo cp -f $DEFAULT_SSH_CONFIG_FILE $DOCKER_BASE_IMAGE_SRC"
+		sudo cp -f "$DEFAULT_SSH_CONFIG_FILE" "$DOCKER_BASE_IMAGE_SRC"
 		if [ ! $? -eq 0 ];then
 			RC=1
-			echo "ERROR: Unable to run cmd: sudo cp -f $SSH_CONFIG_FILE $DOCKER_BASE_IMAGE_SRC"
+			echo "ERROR: Unable to run cmd: sudo cp -f $DEFAULT_SSH_CONFIG_FILE $DOCKER_BASE_IMAGE_SRC"
 		fi
-	else
+	fi
+	
+	if [ ! -f "$DOCKER_BASE_SSH_CONFIG_FILE" ];then
 		RC=1
-		echo "ERROR: Unable to locate the sshd_config file:  $SSH_CONFIG_FILE"
+		echo "ERROR: Unable to run cmd: sudo cp -f $DEFAULT_SSH_CONFIG_FILE $DOCKER_BASE_IMAGE_SRC"
 	fi
 
 	if [[ $RC -eq 0 && ! -d "$USER_SSH_HOME" ]];then
