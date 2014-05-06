@@ -30,7 +30,8 @@ RUN mkdir -p /etc/supervisor/conf.d
 ADD src/supervisord.conf /etc/supervisord.conf
 ADD src/sshd.sv.conf /etc/supervisor/conf.d/sshd.conf
 ADD src/start_sshd_service.sh /opt/start_sshd_service.sh
-RUN chmod +x /opt/start_sshd_service.sh
+RUN chmod 755 /opt/start_sshd_service.sh && \
+	chmod +x /opt/start_sshd_service.sh
 RUN chmod 755 /etc/supervisord.conf
 
 #Setup SSH
