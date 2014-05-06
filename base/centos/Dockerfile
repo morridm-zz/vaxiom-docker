@@ -47,7 +47,7 @@ RUN yum -y update && yum -y upgrade && \
 	pip install supervisor && \
 	mkdir -p /var/run/sshd && \
 	mkdir -p /var/log/supervisor && \
-	mkdir -p /etc/supervisor/conf.d && \
+	mkdir -p /etc/supervisor/conf.d
 ADD src/supervisord.conf /etc/supervisord.conf
 ADD src/sshd.sv.conf /etc/supervisor/conf.d/
 ADD src/init.sh /opt/init.sh
